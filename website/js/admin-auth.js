@@ -4,6 +4,15 @@ const AdminAuth = (() => {
     return HihibelDB.getClient();
   }
 
+  function appBaseUrl() {
+    const path = location.pathname.replace(/\/admin\/[^/]*$/, '');
+    return location.origin + (path || '');
+  }
+
+  function resetPasswordUrl() {
+    return `${appBaseUrl()}/admin/reset-password.html`;
+  }
+
   function translateError(err) {
     const msg = (err?.message || String(err)).toLowerCase();
     if (msg.includes('invalid login credentials')) {
@@ -64,5 +73,49 @@ const AdminAuth = (() => {
     return { ok: true, msg: 'Terhubung ke Supabase' };
   }
 
-  return { getSession, requireAuth, login, logout, testConnection, translateError };
+  async function requestPasswordReset(email) {
+    const db = getClient();
+    if (!db) throw new Error('Supabase belum dikonfigurasi.');
+    const { error } = await db.auth.resetPasswordForEmail(email, {
+      redirectTo: resetPasswordUrl(),
+    });
+    if (error) throw new Error(translateError(error));
+  }
+
+  async function updatePassword(newPassword) {
+    const db = getClient();
+    if (!db) throw new Error('Supabase belum dikonfigurasi.');
+    const { error } = await db.auth.updateUser({ password: newPassword });
+    if (error) throw new Error(translateError(error));
+  }
+
+  async function waitForRecoverySession() {
+    const db = getClient();
+    if (!db) return null;
+
+    const hash = location.hash || '';
+    if (hash.includes('type=recovery') || hash.includes('access_token')) {
+      const { data: { session }, error } = await db.auth.getSession();
+      if (error) throw new Error(translateError(error));
+      return session;
+    }
+
+    return new Promise((resolve) => {
+      const { data: { subscription } } = db.auth.onAuthStateChange((event, session) => {
+        if (event === 'PASSWORD_RECOVERY' || event === 'SIGNED_IN') {
+          subscription.unsubscribe();
+          resolve(session);
+        }
+      });
+      setTimeout(() => {
+        subscription.unsubscribe();
+        resolve(null);
+      }, 8000);
+    });
+  }
+
+  return {
+    getSession, requireAuth, login, logout, testConnection, translateError,
+    requestPasswordReset, updatePassword, waitForRecoverySession, resetPasswordUrl,
+  };
 })();

@@ -58,6 +58,19 @@
           </div>
         </form>
 
+        <p style="margin-top:16px;font-size:0.84rem">
+          <a href="#" id="forgotLink">Lupa password?</a>
+        </p>
+
+        <form class="admin-form" id="forgotForm" hidden style="margin-top:16px;padding-top:16px;border-top:1px solid var(--border-light)">
+          <p class="subtitle" style="margin-bottom:12px">Kami kirim link reset ke email kamu.</p>
+          <div class="field">
+            <label for="forgotEmail">Email admin</label>
+            <input type="email" id="forgotEmail" required placeholder="romuty16@gmail.com">
+          </div>
+          <button type="submit" class="btn-admin" style="width:100%">Kirim link reset</button>
+        </form>
+
         <div class="help-box">
           <h3>Belum bisa login? Buat akun admin dulu:</h3>
           <ol>
@@ -98,6 +111,31 @@
         const session = await AdminAuth.getSession();
         if (session) location.href = 'dashboard.html';
       }
+
+      document.getElementById('forgotLink').addEventListener('click', (e) => {
+        e.preventDefault();
+        const form = document.getElementById('forgotForm');
+        form.hidden = !form.hidden;
+        if (!form.hidden) {
+          document.getElementById('forgotEmail').value = document.getElementById('email').value;
+        }
+      });
+
+      document.getElementById('forgotForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const btn = e.target.querySelector('button');
+        btn.disabled = true;
+        btn.textContent = 'Mengirim...';
+        try {
+          await AdminAuth.requestPasswordReset(document.getElementById('forgotEmail').value.trim());
+          alertBox.innerHTML = `<div class="alert alert-success">Link reset sudah dikirim. Cek inbox/spam email kamu.</div>`;
+          e.target.hidden = true;
+        } catch (err) {
+          alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
+          btn.disabled = false;
+          btn.textContent = 'Kirim link reset';
+        }
+      });
 
       document.getElementById('loginForm').addEventListener('submit', async (e) => {
         e.preventDefault();

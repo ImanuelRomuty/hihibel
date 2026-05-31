@@ -26,7 +26,24 @@ Ikuti langkah berurutan. Estimasi waktu: **15 menit**.
 
 ---
 
-## Langkah 3 — Buat Akun Admin
+## Langkah 3 — Atur URL Auth (PENTING)
+
+Supabase default-nya pakai `localhost` — ini bikin link reset password error.
+
+1. Buka **Authentication** → **URL Configuration**
+2. **Site URL:** ganti jadi
+   ```
+   https://imanuelromuty.github.io/hihibel/
+   ```
+3. **Redirect URLs** — tambahkan (klik Add URL):
+   ```
+   https://imanuelromuty.github.io/hihibel/**
+   ```
+4. Klik **Save**
+
+---
+
+## Langkah 4 — Buat Akun Admin
 
 1. Buka **Authentication** → **Users**
 2. Klik **Add user** → **Create new user**
@@ -38,21 +55,23 @@ Ikuti langkah berurutan. Estimasi waktu: **15 menit**.
 
 ---
 
-## Langkah 4 — Ambil API Keys
+## Langkah 5 — Ambil API Keys
 
 1. Buka **Settings** (gear icon) → **API**
 2. Copy dua nilai ini:
 
-| Field | Contoh |
-|-------|--------|
-| **Project URL** | `https://xxxxx.supabase.co` |
-| **anon public** key | `eyJhbGciOiJIUzI1NiIs...` (panjang) |
+| Field | Contoh | ❌ Bukan ini |
+|-------|--------|-------------|
+| **Project URL** | `https://xxxxx.supabase.co` | `sb_publishable_...` |
+| **anon public** key | `eyJhbGciOiJIUzI1NiIs...` (panjang) | service_role key |
 
-> Pakai **anon public**, BUKAN service_role (service_role rahasia, jangan dipublish).
+> **Project URL** ada di bagian **Project URL** — format `https://something.supabase.co`
+>
+> Jangan pakai **Publishable key** (`sb_publishable_...`) sebagai URL!
 
 ---
 
-## Langkah 5 — Hubungkan ke Website
+## Langkah 6 — Hubungkan ke Website
 
 Jalankan di terminal:
 
@@ -71,11 +90,11 @@ Script otomatis:
 
 ---
 
-## Langkah 6 — Import Soal & Test
+## Langkah 7 — Import Soal & Test
 
 1. Tunggu deploy selesai: https://github.com/ImanuelRomuty/hihibel/actions
 2. Buka https://imanuelromuty.github.io/hihibel/admin/login.html
-3. Login dengan email + password admin (Langkah 3)
+3. Login dengan email + password admin (Langkah 4)
 4. Klik **Import 50 Soal Seed**
 5. Buka latihan → soal dari database Supabase
 
@@ -97,6 +116,11 @@ Script otomatis:
 **Login admin gagal**
 - Pastikan user sudah **Auto Confirm** di Supabase
 - Cek email/password benar
+
+**Reset password → localhost / connection refused**
+- Supabase **Site URL** masih `http://localhost:3000` → ubah ke Langkah 3
+- Tambahkan redirect URL `https://imanuelromuty.github.io/hihibel/**`
+- Atau reset manual: Supabase → Users → klik user → set password baru langsung
 
 **Import seed error**
 - Pastikan schema.sql sudah di-run (Langkah 2)
