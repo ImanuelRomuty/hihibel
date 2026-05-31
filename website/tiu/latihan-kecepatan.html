@@ -34,7 +34,7 @@
 
     <header class="latihan-header">
       <h1>50 Soal HOTS — Kecepatan</h1>
-      <p>Soal tingkat HOTS dengan pembahasan step-by-step dan visual animasi. Pilih jawaban, cek, lalu pelajari pembahasannya.</p>
+      <p>Pilih jawaban, cek, lalu pelajari pembahasan dengan langkah-langkah dan animasi visual.</p>
       <div class="latihan-meta">
         <div class="latihan-meta-item"><strong>50</strong> soal</div>
         <div class="latihan-meta-item"><strong>10</strong> kategori</div>
@@ -82,12 +82,11 @@
 
         <p class="quiz-question-text" id="questionText">Memuat soal...</p>
 
-        <div class="anim-visual" id="animVisual"></div>
-
         <div class="quiz-options" id="quizOptions"></div>
 
         <div class="pembahasan-panel" id="pembahasanPanel" style="display:none">
           <h4>Pembahasan</h4>
+          <div class="anim-visual pembahasan-anim" id="animVisual"></div>
           <div id="pembahasanSteps"></div>
         </div>
 
@@ -115,6 +114,7 @@
   <script src="../js/config.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/soal-service.js"></script>
+  <script src="../js/anim-renderer.js"></script>
   <script src="../js/questions-kecepatan.js"></script>
   <script src="../js/latihan.js"></script>
 </body>

@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/latihan.css">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
@@ -22,7 +23,7 @@
       </div>
     </header>
 
-    <main class="admin-main">
+    <main class="admin-main form-wide">
       <div class="admin-card">
         <h1 id="pageTitle">Buat Soal Baru</h1>
         <p class="subtitle">Soal langsung tampil di latihan setelah disimpan.</p>
@@ -99,6 +100,18 @@
             <button type="button" class="btn-sm" id="btnAddLangkah" style="margin-top:8px">+ Tambah Langkah</button>
           </div>
 
+          <div class="anim-form-section">
+            <h2 class="section-title">Visual Pembahasan</h2>
+            <p class="subtitle" style="margin-bottom:16px">Animasi hanya muncul di pembahasan setelah siswa cek jawaban. Form menyesuaikan kategori soal.</p>
+            <div class="anim-form-grid">
+              <div class="anim-form-fields" id="animFields"></div>
+              <div class="anim-preview-wrap">
+                <p class="preview-label">Preview animasi</p>
+                <div class="anim-visual" id="animPreview"></div>
+              </div>
+            </div>
+          </div>
+
           <div class="admin-actions">
             <button type="submit" class="btn-admin primary">Simpan Soal</button>
             <a href="dashboard.html" class="btn-admin secondary">Batal</a>
@@ -113,6 +126,8 @@
   <script src="../js/config.js"></script>
   <script src="../js/supabase-client.js"></script>
   <script src="../js/soal-service.js"></script>
+  <script src="../js/anim-renderer.js"></script>
+  <script src="../js/admin-soal-form.js"></script>
   <script src="../js/admin-auth.js"></script>
   <script>
     (async () => {
@@ -160,6 +175,7 @@
         const { data, error } = await db.from('soal').select('*').eq('id', editId).single();
         if (error || !data) {
           showAlert('Soal tidak ditemukan.', 'error');
+          AdminSoalForm.init();
         } else {
           document.getElementById('subBab').value = data.sub_bab;
           document.getElementById('kategori').value = data.kategori;
@@ -172,7 +188,10 @@
           document.getElementById('jawaban').value = data.jawaban;
           langkahList.innerHTML = '';
           (data.langkah || ['']).forEach(l => addLangkahRow(l));
+          AdminSoalForm.init(data.animasi || AnimRenderer.defaultAnimasi(data.kategori));
         }
+      } else {
+        AdminSoalForm.init();
       }
 
       document.getElementById('soalForm').addEventListener('submit', async (e) => {
@@ -195,6 +214,7 @@
           opsi,
           jawaban: document.getElementById('jawaban').value,
           langkah,
+          animasi: AdminSoalForm.collectAnimasi(),
         };
 
         try {

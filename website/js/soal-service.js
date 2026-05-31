@@ -14,6 +14,7 @@ const SoalService = (() => {
   };
 
   function autoAnimasi(kategori) {
+    if (typeof AnimRenderer !== 'undefined') return AnimRenderer.defaultAnimasi(kategori);
     return KATEGORI_ANIMASI[kategori] || { tipe: 'rata', data: { s: kategori, h: '?' } };
   }
 

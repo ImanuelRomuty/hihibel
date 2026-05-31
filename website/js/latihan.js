@@ -170,7 +170,6 @@
       });
     }
 
-    renderAnimation(q.animasi);
     renderPembahasan(q, !!answered);
 
     els.btnPrev.disabled = currentIndex === 0;
@@ -210,63 +209,14 @@
   function renderPembahasan(q, show) {
     if (!show) {
       els.pembahasan.style.display = 'none';
+      AnimRenderer.renderInto(els.animVisual, null);
       return;
     }
     els.pembahasan.style.display = 'block';
+    AnimRenderer.renderInto(els.animVisual, q.animasi);
     els.pembahasanSteps.innerHTML = q.langkah.map(s =>
       `<div class="pembahasan-step"><span class="step-dot-p"></span><p>${s}</p></div>`
     ).join('');
-  }
-
-  function renderAnimation(anim) {
-    if (!anim) { els.animVisual.innerHTML = ''; return; }
-
-    let html = '';
-    switch (anim.tipe) {
-      case 'rute':
-        html = '<div class="anim-rute">';
-        anim.data.forEach(seg => {
-          if (seg.l) html += `<div class="anim-node">${seg.l}</div>`;
-          const label = [seg.j, seg.t, seg.v ? '@'+seg.v : ''].filter(Boolean).join(' · ');
-          if (label) html += `<div class="anim-seg"><span class="anim-seg-label">${label}</span></div>`;
-        });
-        html += '</div>';
-        break;
-      case 'susul':
-        html = `<div class="anim-susul"><div class="anim-track">
-          <span class="anim-mover slow">🚗</span>
-          <span class="anim-mover" style="animation-delay:0.3s">🏎️</span>
-        </div></div>
-        <div class="anim-info">v₁=${anim.data.v1} · v₂=${anim.data.v2} · jarak=${anim.data.j} km</div>`;
-        break;
-      case 'temu':
-        html = `<div class="anim-susul"><div class="anim-track">
-          <span class="anim-mover" style="left:10%">→ 🚗</span>
-          <span class="anim-mover" style="right:10%;left:auto;animation:moveLeft 2s ease-in-out infinite alternate">🚗 ←</span>
-        </div></div>
-        <div class="anim-info">${anim.data.v1}+${anim.data.v2}=${Number(anim.data.v1)+Number(anim.data.v2)} km/j · ${anim.data.j} km</div>`;
-        break;
-      case 'kereta':
-        html = `<div class="anim-kereta-wrap"><span class="anim-kereta">🚂</span></div>
-        <div class="anim-info">${anim.data.p} @ ${anim.data.v}</div>`;
-        break;
-      case 'balik':
-        html = `<div class="anim-info" style="margin-top:0">
-          <div style="margin-bottom:8px">→ Pergi @ ${anim.data.pergi} km/j</div>
-          <div style="margin-bottom:8px">← Pulang @ ${anim.data.pulang} km/j</div>
-          <strong style="color:var(--accent)">v̄ = ${anim.data.hasil}</strong></div>`;
-        break;
-      case 'konversi':
-        html = `<div class="anim-info" style="font-size:1rem;margin-top:0">
-          ${anim.data.dari} <span style="color:var(--accent)">→</span> ${anim.data.ke}</div>`;
-        break;
-      case 'rata':
-        html = `<div class="anim-info" style="margin-top:0">
-          <div>${anim.data.s}</div>
-          <strong style="color:var(--accent);font-size:1.1rem">= ${anim.data.h}</strong></div>`;
-        break;
-    }
-    els.animVisual.innerHTML = html;
   }
 
   function navigate(dir) {
@@ -299,10 +249,6 @@
       }
     });
   }
-
-  const style = document.createElement('style');
-  style.textContent = `@keyframes moveLeft { from { right: 10%; } to { right: 60%; } }`;
-  document.head.appendChild(style);
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', init);
