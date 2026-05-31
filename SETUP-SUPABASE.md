@@ -122,6 +122,15 @@ Script otomatis:
 - Tambahkan redirect URL `https://imanuelromuty.github.io/hihibel/**`
 - Atau reset manual: Supabase → Users → klik user → set password baru langsung
 
+**"email rate limit exceeded" saat reset password**
+- Supabase membatasi jumlah email reset (~4/jam). Kamu sudah klik terlalu sering.
+- **Solusi cepat (tanpa email):**
+  1. Supabase → **Authentication** → **Users**
+  2. Klik user admin kamu
+  3. Tab **Overview** → **Reset password** atau edit user → isi password baru
+  4. Login di website dengan password baru itu
+- Atau tunggu ~1 jam lalu coba kirim link reset lagi
+
 **Import seed error**
 - Pastikan schema.sql sudah di-run (Langkah 2)
 - Cek RLS policies aktif

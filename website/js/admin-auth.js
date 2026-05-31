@@ -24,6 +24,9 @@ const AdminAuth = (() => {
     if (msg.includes('failed to fetch') || msg.includes('network')) {
       return 'Tidak bisa hubung ke Supabase. Cek koneksi internet atau config URL.';
     }
+    if (msg.includes('rate limit') || msg.includes('email rate')) {
+      return 'Terlalu banyak permintaan reset email. Tunggu ~1 jam, atau set password baru langsung di Supabase → Authentication → Users.';
+    }
     return err.message || 'Login gagal.';
   }
 
