@@ -51,8 +51,9 @@
       const params = new URLSearchParams(location.search);
       const alertBox = document.getElementById('alertBox');
 
-      if (params.get('error') === 'config') {
-        alertBox.innerHTML = '<div class="alert alert-error">Supabase belum dikonfigurasi. Isi <code>js/config.js</code> atau set env vars di Netlify.</div>';
+      const cfgErr = HihibelDB.configError?.();
+      if (params.get('error') === 'config' || cfgErr) {
+        alertBox.innerHTML = `<div class="alert alert-error">${cfgErr || 'Supabase belum dikonfigurasi.'}</div>`;
       }
 
       if (HihibelDB.isConfigured()) {
