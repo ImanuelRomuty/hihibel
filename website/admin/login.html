@@ -96,6 +96,10 @@
       const alertBox = document.getElementById('alertBox');
       const statusPill = document.getElementById('statusPill');
 
+      if (params.get('error') === 'session') {
+        alertBox.innerHTML = `<div class="alert alert-error">Session hilang setelah login. Coba login lagi — pastikan tidak pakai mode incognito.</div>`;
+      }
+
       const cfgErr = HihibelDB.configError?.();
       if (cfgErr) {
         statusPill.innerHTML = '<span class="status-pill bad"><span class="status-dot"></span>Config error</span>';
@@ -108,8 +112,8 @@
       }
 
       if (HihibelDB.isConfigured()) {
-        const session = await AdminAuth.getSession();
-        if (session) location.href = 'dashboard.html';
+        const session = await AdminAuth.waitForSession?.(2000) ?? await AdminAuth.getSession();
+        if (session) location.replace('dashboard.html');
       }
 
       document.getElementById('forgotLink').addEventListener('click', (e) => {
@@ -148,7 +152,8 @@
             document.getElementById('email').value.trim(),
             document.getElementById('password').value
           );
-          location.href = 'dashboard.html';
+          alertBox.innerHTML = `<div class="alert alert-success">Login berhasil, membuka dashboard...</div>`;
+          setTimeout(() => location.replace('dashboard.html'), 300);
         } catch (err) {
           alertBox.innerHTML = `<div class="alert alert-error">${err.message}</div>`;
           btn.disabled = false;

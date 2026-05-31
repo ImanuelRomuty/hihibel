@@ -117,6 +117,11 @@ Script otomatis:
 - Pastikan user sudah **Auto Confirm** di Supabase
 - Cek email/password benar
 
+**Login klik "Masuk" tapi tidak kemana-mana**
+- Kemungkinan password salah — harusnya muncul pesan merah; kalau tidak, hard refresh (Ctrl+Shift+R)
+- Atau session loop: coba browser biasa (bukan incognito), tunggu deploy terbaru
+- Reset password langsung di Supabase → Users → buat user baru dengan **Auto Confirm**
+
 **Reset password → localhost / connection refused**
 - Supabase **Site URL** masih `http://localhost:3000` → ubah ke Langkah 3
 - Tambahkan redirect URL `https://imanuelromuty.github.io/hihibel/**`

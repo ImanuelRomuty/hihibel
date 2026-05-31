@@ -37,14 +37,44 @@ const AdminAuth = (() => {
     return session;
   }
 
+  async function waitForSession(timeoutMs = 5000) {
+    const db = getClient();
+    if (!db) return null;
+
+    const existing = await getSession();
+    if (existing) return existing;
+
+    return new Promise((resolve) => {
+      let done = false;
+      const finish = (session) => {
+        if (done) return;
+        done = true;
+        subscription.unsubscribe();
+        resolve(session);
+      };
+
+      const { data: { subscription } } = db.auth.onAuthStateChange((event, session) => {
+        if (session && (event === 'INITIAL_SESSION' || event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
+          finish(session);
+        }
+      });
+
+      setTimeout(async () => {
+        if (done) return;
+        const { data: { session } } = await db.auth.getSession();
+        finish(session);
+      }, timeoutMs);
+    });
+  }
+
   async function requireAuth(redirectTo = 'login.html') {
     if (!HihibelDB.isConfigured()) {
-      window.location.href = redirectTo + '?error=config';
+      window.location.replace(redirectTo + '?error=config');
       return null;
     }
-    const session = await getSession();
+    const session = await waitForSession();
     if (!session) {
-      window.location.href = redirectTo;
+      window.location.replace(redirectTo + '?error=session');
       return null;
     }
     return session;
@@ -59,7 +89,11 @@ const AdminAuth = (() => {
       e.original = error;
       throw e;
     }
-    return data;
+    const session = data.session || await waitForSession(3000);
+    if (!session) {
+      throw new Error('Login gagal menyimpan session. Coba browser lain atau matikan mode private/incognito.');
+    }
+    return { ...data, session };
   }
 
   async function logout() {
@@ -118,7 +152,7 @@ const AdminAuth = (() => {
   }
 
   return {
-    getSession, requireAuth, login, logout, testConnection, translateError,
+    getSession, waitForSession, requireAuth, login, logout, testConnection, translateError,
     requestPasswordReset, updatePassword, waitForRecoverySession, resetPasswordUrl,
   };
 })();

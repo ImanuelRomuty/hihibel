@@ -26,7 +26,14 @@ const HihibelDB = (() => {
     if (!isConfigured()) return null;
     if (!client && window.supabase) {
       const cfg = window.HIHIBEL_CONFIG;
-      client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY);
+      client = window.supabase.createClient(cfg.SUPABASE_URL, cfg.SUPABASE_ANON_KEY, {
+        auth: {
+          persistSession: true,
+          autoRefreshToken: true,
+          detectSessionInUrl: true,
+          storage: window.localStorage,
+        },
+      });
     }
     return client;
   }
