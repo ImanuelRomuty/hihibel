@@ -1,0 +1,18 @@
+# Dependencies
+node_modules/
+
+# Supabase config (isi manual lokal, Netlify pakai env vars)
+website/js/config.js
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Editor
+.idea/
+.vscode/
+*.swp
+
+# Env
+.env
+.env.local

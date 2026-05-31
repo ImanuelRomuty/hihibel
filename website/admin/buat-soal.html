@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Buat Soal — Hihibel Admin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="admin-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="../index.html" class="site-logo">Hihibel<span>admin</span></a>
+        <nav class="header-nav">
+          <a href="dashboard.html">Soal</a>
+          <a href="buat-soal.html" class="active">+ Buat Soal</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div class="admin-card">
+        <h1 id="pageTitle">Buat Soal Baru</h1>
+        <p class="subtitle">Soal langsung tampil di latihan setelah disimpan.</p>
+
+        <div id="alertBox"></div>
+
+        <form class="admin-form" id="soalForm">
+          <input type="hidden" id="dbId">
+
+          <div class="row-2">
+            <div class="field">
+              <label for="subBab">Sub Bab</label>
+              <select id="subBab">
+                <option value="kecepatan">Kecepatan (Soal Cerita)</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="kategori">Kategori</label>
+              <select id="kategori">
+                <option>Dua Kecepatan</option>
+                <option>Kecepatan Rata-rata</option>
+                <option>Menyusul</option>
+                <option>Bertemu</option>
+                <option>Pergi-Pulang</option>
+                <option>Kereta</option>
+                <option>Konversi</option>
+                <option>Kapal & Arus</option>
+                <option>Logika</option>
+                <option>HOTS Kombinasi</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="urutan">Nomor Urut (opsional)</label>
+            <input type="number" id="urutan" min="1" placeholder="1, 2, 3...">
+          </div>
+
+          <div class="field">
+            <label for="soal">Pertanyaan</label>
+            <textarea id="soal" required placeholder="Tulis soal di sini..."></textarea>
+          </div>
+
+          <div class="field">
+            <label>Pilihan Jawaban</label>
+            <div class="opsi-grid">
+              <input type="text" id="opsiA" required placeholder="A. ...">
+              <input type="text" id="opsiB" required placeholder="B. ...">
+              <input type="text" id="opsiC" required placeholder="C. ...">
+              <input type="text" id="opsiD" required placeholder="D. ...">
+              <input type="text" id="opsiE" required placeholder="E. ...">
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="jawaban">Jawaban Benar</label>
+            <select id="jawaban" required>
+              <option value="A">A</option>
+              <option value="B">B</option>
+              <option value="C">C</option>
+              <option value="D">D</option>
+              <option value="E">E</option>
+            </select>
+          </div>
+
+          <div class="field">
+            <label>Pembahasan (langkah demi langkah)</label>
+            <div class="langkah-list" id="langkahList">
+              <div class="langkah-row">
+                <input type="text" class="langkah-input" placeholder="Langkah 1...">
+                <button type="button" class="btn-sm danger btn-remove-langkah" style="display:none">×</button>
+              </div>
+            </div>
+            <button type="button" class="btn-sm" id="btnAddLangkah" style="margin-top:8px">+ Tambah Langkah</button>
+          </div>
+
+          <div class="admin-actions">
+            <button type="submit" class="btn-admin primary">Simpan Soal</button>
+            <a href="dashboard.html" class="btn-admin secondary">Batal</a>
+            <button type="button" class="btn-admin danger" id="btnDelete" style="display:none;margin-left:auto">Hapus Soal</button>
+          </div>
+        </form>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/soal-service.js"></script>
+  <script src="../js/admin-auth.js"></script>
+  <script>
+    (async () => {
+      const session = await AdminAuth.requireAuth();
+      if (!session) return;
+
+      const params = new URLSearchParams(location.search);
+      const editId = params.get('id');
+      const alertBox = document.getElementById('alertBox');
+      const langkahList = document.getElementById('langkahList');
+
+      function showAlert(msg, type = 'success') {
+        alertBox.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+      }
+
+      function addLangkahRow(value = '') {
+        const row = document.createElement('div');
+        row.className = 'langkah-row';
+        row.innerHTML = `
+          <input type="text" class="langkah-input" value="${value.replace(/"/g, '&quot;')}" placeholder="Langkah...">
+          <button type="button" class="btn-sm danger btn-remove-langkah">×</button>`;
+        row.querySelector('.btn-remove-langkah').addEventListener('click', () => {
+          row.remove();
+          updateRemoveButtons();
+        });
+        langkahList.appendChild(row);
+        updateRemoveButtons();
+      }
+
+      function updateRemoveButtons() {
+        const rows = langkahList.querySelectorAll('.langkah-row');
+        rows.forEach((row, i) => {
+          row.querySelector('.btn-remove-langkah').style.display = rows.length > 1 ? '' : 'none';
+        });
+      }
+
+      document.getElementById('btnAddLangkah').addEventListener('click', () => addLangkahRow());
+
+      if (editId) {
+        document.getElementById('pageTitle').textContent = 'Edit Soal';
+        document.getElementById('btnDelete').style.display = '';
+        document.getElementById('dbId').value = editId;
+
+        const db = HihibelDB.getClient();
+        const { data, error } = await db.from('soal').select('*').eq('id', editId).single();
+        if (error || !data) {
+          showAlert('Soal tidak ditemukan.', 'error');
+        } else {
+          document.getElementById('subBab').value = data.sub_bab;
+          document.getElementById('kategori').value = data.kategori;
+          document.getElementById('urutan').value = data.urutan || '';
+          document.getElementById('soal').value = data.soal;
+          const opsi = data.opsi;
+          ['A','B','C','D','E'].forEach((l, i) => {
+            document.getElementById('opsi' + l).value = opsi[i]?.replace(/^[A-E]\.\s*/, '') || opsi[i] || '';
+          });
+          document.getElementById('jawaban').value = data.jawaban;
+          langkahList.innerHTML = '';
+          (data.langkah || ['']).forEach(l => addLangkahRow(l));
+        }
+      }
+
+      document.getElementById('soalForm').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const letters = ['A','B','C','D','E'];
+        const opsi = letters.map(l => {
+          let val = document.getElementById('opsi' + l).value.trim();
+          if (!val.startsWith(l + '.')) val = `${l}. ${val}`;
+          return val;
+        });
+        const langkah = [...langkahList.querySelectorAll('.langkah-input')]
+          .map(i => i.value.trim()).filter(Boolean);
+
+        const payload = {
+          dbId: document.getElementById('dbId').value ? parseInt(document.getElementById('dbId').value, 10) : null,
+          sub_bab: document.getElementById('subBab').value,
+          kategori: document.getElementById('kategori').value,
+          urutan: parseInt(document.getElementById('urutan').value, 10) || null,
+          soal: document.getElementById('soal').value.trim(),
+          opsi,
+          jawaban: document.getElementById('jawaban').value,
+          langkah,
+        };
+
+        try {
+          await SoalService.saveSoal(payload);
+          showAlert('Soal berhasil disimpan!');
+          setTimeout(() => location.href = 'dashboard.html', 1200);
+        } catch (err) {
+          showAlert(err.message, 'error');
+        }
+      });
+
+      document.getElementById('btnDelete')?.addEventListener('click', async () => {
+        if (!confirm('Hapus soal ini permanen?')) return;
+        try {
+          await SoalService.deleteSoal(parseInt(editId, 10));
+          location.href = 'dashboard.html';
+        } catch (e) {
+          showAlert(e.message, 'error');
+        }
+      });
+    })();
+  </script>
+</body>
+</html>

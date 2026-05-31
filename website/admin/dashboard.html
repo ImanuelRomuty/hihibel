@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard Admin — Hihibel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/admin.css">
+</head>
+<body>
+  <div class="admin-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="../index.html" class="site-logo">Hihibel<span>admin</span></a>
+        <nav class="header-nav">
+          <a href="dashboard.html" class="active">Soal</a>
+          <a href="buat-soal.html">+ Buat Soal</a>
+          <a href="../tiu/latihan-kecepatan.html" target="_blank">Preview Latihan</a>
+        </nav>
+      </div>
+    </header>
+
+    <main class="admin-main wide">
+      <div class="admin-topbar">
+        <h1>Kelola Soal</h1>
+        <div class="admin-user">
+          <span id="userEmail"></span>
+          <button class="btn-sm" id="btnLogout">Keluar</button>
+        </div>
+      </div>
+
+      <div id="alertBox"></div>
+
+      <div class="admin-card">
+        <div class="admin-topbar" style="margin-bottom:20px">
+          <p class="subtitle" style="margin:0">Sub bab: Kecepatan</p>
+          <div style="display:flex;gap:8px">
+            <a href="buat-soal.html" class="btn-admin primary">+ Buat Soal</a>
+            <button class="btn-admin secondary" id="btnImport">Import 50 Soal Seed</button>
+          </div>
+        </div>
+
+        <div id="tableWrap">
+          <div class="loading-state">Memuat soal...</div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/soal-service.js"></script>
+  <script src="../js/admin-auth.js"></script>
+  <script src="../js/questions-kecepatan.js"></script>
+  <script>
+    (async () => {
+      const session = await AdminAuth.requireAuth();
+      if (!session) return;
+
+      document.getElementById('userEmail').textContent = session.user.email;
+      document.getElementById('btnLogout').addEventListener('click', () => AdminAuth.logout());
+
+      const alertBox = document.getElementById('alertBox');
+      const tableWrap = document.getElementById('tableWrap');
+
+      function showAlert(msg, type = 'success') {
+        alertBox.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
+        setTimeout(() => { alertBox.innerHTML = ''; }, 4000);
+      }
+
+      async function loadTable() {
+        try {
+          const rows = await SoalService.fetchAllAdmin('kecepatan');
+          if (rows.length === 0) {
+            tableWrap.innerHTML = `
+              <div class="empty-state">
+                <p>Belum ada soal di database.</p>
+                <p style="font-size:0.85rem">Klik "Import 50 Soal Seed" untuk memindahkan soal bawaan, atau buat soal baru.</p>
+              </div>`;
+            return;
+          }
+          tableWrap.innerHTML = `
+            <table class="soal-table">
+              <thead><tr>
+                <th>#</th><th>Kategori</th><th>Soal</th><th>Jawaban</th><th>Aksi</th>
+              </tr></thead>
+              <tbody>${rows.map(r => `
+                <tr>
+                  <td>${r.urutan ?? r.id}</td>
+                  <td>${r.kategori}</td>
+                  <td class="soal-preview">${r.soal.slice(0, 80)}${r.soal.length > 80 ? '...' : ''}</td>
+                  <td><strong>${r.jawaban}</strong></td>
+                  <td class="table-actions">
+                    <a href="buat-soal.html?id=${r.id}" class="btn-sm">Edit</a>
+                    <button class="btn-sm danger" data-delete="${r.id}">Hapus</button>
+                  </td>
+                </tr>`).join('')}
+              </tbody>
+            </table>`;
+
+          tableWrap.querySelectorAll('[data-delete]').forEach(btn => {
+            btn.addEventListener('click', async () => {
+              if (!confirm('Hapus soal ini?')) return;
+              try {
+                await SoalService.deleteSoal(parseInt(btn.dataset.delete, 10));
+                showAlert('Soal dihapus.');
+                loadTable();
+              } catch (e) {
+                showAlert(e.message, 'error');
+              }
+            });
+          });
+        } catch (e) {
+          tableWrap.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
+        }
+      }
+
+      document.getElementById('btnImport').addEventListener('click', async () => {
+        if (!confirm('Import 50 soal bawaan ke database? (Hanya jika tabel masih kosong)')) return;
+        try {
+          const existing = await SoalService.fetchAllAdmin('kecepatan');
+          if (existing.length > 0) {
+            showAlert('Database sudah berisi soal. Hapus dulu atau buat manual.', 'error');
+            return;
+          }
+          const result = await SoalService.importSeed(SOAL_KECEPATAN, 'kecepatan');
+          showAlert(`${result.length} soal berhasil diimport!`);
+          loadTable();
+        } catch (e) {
+          showAlert(e.message, 'error');
+        }
+      });
+
+      loadTable();
+    })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>50 Soal HOTS Kecepatan — Hihibel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/app.css">
+  <link rel="stylesheet" href="../css/latihan.css">
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="../index.html" class="site-logo">Hihibel<span>belajar ringkas</span></a>
+        <nav class="header-nav" id="headerNav">
+          <a href="../index.html">Beranda</a>
+          <a href="index.html" class="active">TIU</a>
+        </nav>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <nav class="breadcrumb container" style="padding-top:20px">
+      <a href="../index.html">Beranda</a><span>/</span>
+      <a href="index.html">TIU</a><span>/</span>
+      <a href="soal-cerita.html">Soal Cerita</a><span>/</span>
+      <span class="current">Latihan HOTS</span>
+    </nav>
+
+    <header class="latihan-header">
+      <h1>50 Soal HOTS — Kecepatan</h1>
+      <p>Soal tingkat HOTS dengan pembahasan step-by-step dan visual animasi. Pilih jawaban, cek, lalu pelajari pembahasannya.</p>
+      <div class="latihan-meta">
+        <div class="latihan-meta-item"><strong>50</strong> soal</div>
+        <div class="latihan-meta-item"><strong>10</strong> kategori</div>
+        <div class="latihan-meta-item"><strong>HOTS</strong> level</div>
+      </div>
+    </header>
+
+    <div class="score-banner" id="scoreBanner" style="display:none">
+      <div class="score-card">
+        <div>
+          <p>Skor kamu</p>
+          <span class="score-num" id="scoreNum">0/0</span>
+        </div>
+        <p style="font-size:0.82rem;color:var(--text-light)">Jawaban benar dari soal yang sudah dikerjakan</p>
+      </div>
+    </div>
+
+    <div class="quiz-progress-wrap">
+      <div class="quiz-progress-bar">
+        <div class="quiz-progress-fill" id="progressFill"></div>
+      </div>
+      <div class="quiz-progress-text" id="progressText">
+        <span>Soal 1 / 50</span><span>0%</span>
+      </div>
+    </div>
+
+    <div class="quiz-filters" id="quizFilters"></div>
+
+    <div class="quiz-grid-toggle">
+      <button class="btn-mode" id="modeToggle">Daftar Soal</button>
+    </div>
+
+    <div class="quiz-grid quiz-grid-view" id="gridView"></div>
+
+    <div id="loadingState" class="quiz-main" style="text-align:center;padding:60px;color:var(--text-light)">
+      Memuat soal...
+    </div>
+
+    <div class="quiz-main quiz-single-view" id="singleView" style="display:none">
+      <div class="quiz-card-main">
+        <div class="quiz-top">
+          <span class="quiz-badge" id="quizBadge">Kategori</span>
+          <span class="quiz-num-display" id="quizNumDisplay">#01</span>
+        </div>
+
+        <p class="quiz-question-text" id="questionText">Memuat soal...</p>
+
+        <div class="anim-visual" id="animVisual"></div>
+
+        <div class="quiz-options" id="quizOptions"></div>
+
+        <div class="pembahasan-panel" id="pembahasanPanel" style="display:none">
+          <h4>Pembahasan</h4>
+          <div id="pembahasanSteps"></div>
+        </div>
+
+        <div class="quiz-nav">
+          <button class="btn-nav" id="btnPrev" disabled>
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 12H5M12 19l-7-7 7-7"/></svg>
+            Sebelumnya
+          </button>
+          <button class="btn-nav primary" id="btnCheck" style="display:none">Cek Jawaban</button>
+          <button class="btn-nav" id="btnNext">
+            Selanjutnya
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <footer class="site-footer">
+      <p>Hihibel · 50 Soal HOTS Kecepatan</p>
+    </footer>
+  </div>
+
+  <script src="../js/app.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/supabase-client.js"></script>
+  <script src="../js/soal-service.js"></script>
+  <script src="../js/questions-kecepatan.js"></script>
+  <script src="../js/latihan.js"></script>
+</body>
+</html>

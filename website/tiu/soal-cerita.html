@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Soal Cerita — Jarak, Waktu & Kecepatan</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=IBM+Plex+Mono:wght@500&family=Source+Serif+4:opsz,wght@8..60,600;8..60,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/app.css">
+</head>
+<body>
+  <div class="page-wrap">
+    <header class="site-header">
+      <div class="header-inner">
+        <a href="../index.html" class="site-logo">Hihibel<span>belajar ringkas</span></a>
+        <nav class="header-nav" id="headerNav">
+          <a href="../index.html">Beranda</a>
+          <a href="index.html" class="active">TIU</a>
+        </nav>
+        <button class="menu-toggle" id="menuToggle" aria-label="Menu">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="lesson-layout">
+      <!-- Sidebar -->
+      <aside class="lesson-sidebar">
+        <nav class="breadcrumb" style="padding-top: 0;">
+          <a href="../index.html">Beranda</a>
+          <span>/</span>
+          <a href="index.html">TIU</a>
+          <span>/</span>
+          <span class="current">Soal Cerita</span>
+        </nav>
+
+        <div class="sidebar-block" style="margin-top: 20px;">
+          <div class="sidebar-label">Sub Bab TIU</div>
+          <ul class="sidebar-subbab">
+            <li><a href="#" class="disabled-link">Analogi Verbal</a></li>
+            <li><a href="#" class="disabled-link">Silogisme</a></li>
+            <li><a href="#" class="disabled-link">Analitis</a></li>
+            <li><a href="#" class="disabled-link">Berhitung</a></li>
+            <li><a href="#" class="disabled-link">Deret Angka</a></li>
+            <li><a href="#" class="disabled-link">Perband. Kuantitatif</a></li>
+            <li><a href="soal-cerita.html" class="current">Soal Cerita</a></li>
+            <li><a href="#" class="disabled-link">Analogi Gambar</a></li>
+            <li><a href="#" class="disabled-link">Ketidaksamaan</a></li>
+            <li><a href="#" class="disabled-link">Serial Gambar</a></li>
+          </ul>
+        </div>
+
+        <div class="sidebar-block">
+          <div class="sidebar-label">Dalam Bab Ini</div>
+          <ul class="sidebar-nav" id="sidebarNav">
+            <li><a href="#contoh-soal">Contoh Soal</a></li>
+            <li><a href="#rumus">Rumus Inti</a></li>
+            <li><a href="#pola">Pola Soal</a></li>
+            <li><a href="#strategi">Strategi</a></li>
+            <li><a href="#latihan">Latihan</a></li>
+            <li><a href="latihan-kecepatan.html">→ 50 Soal HOTS</a></li>
+          </ul>
+        </div>
+      </aside>
+
+      <!-- Content -->
+      <article class="lesson-content">
+        <header>
+          <p class="sidebar-label" style="margin-bottom: 8px;">Numerik · Soal Cerita</p>
+          <h1 class="lesson-title">Jarak, Waktu & Kecepatan</h1>
+          <p class="lesson-subtitle">Rumus, pola soal, dan strategi cepat untuk menyelesaikan soal cerita di ujian TIU.</p>
+        </header>
+
+        <!-- CONTOH SOAL -->
+        <section class="lesson-section" id="contoh-soal">
+          <h2>Contoh Soal</h2>
+          <div class="callout callout-question prose">
+            <p>Seorang pengendara motor menempuh perjalanan dari kota A ke kota B sejauh <strong>240 km</strong>. Ia mengendarai motor dengan kecepatan rata-rata <strong>60 km/jam</strong>. Setelah menempuh perjalanan selama <strong>2 jam</strong>, ia beristirahat selama <strong>1 jam</strong>. Setelah itu, ia melanjutkan perjalanan dengan kecepatan rata-rata <strong>80 km/jam</strong> hingga sampai di kota B.</p>
+            <p><strong>Berapa lama waktu total perjalanan dari kota A sampai kota B, termasuk waktu istirahat?</strong></p>
+          </div>
+
+          <h3>Pembahasan</h3>
+          <div class="steps">
+            <div class="step-item">
+              <div class="step-num">1</div>
+              <div class="step-body">
+                <h4>Jarak tempuh pertama</h4>
+                <div class="formula-inline">Jarak = v × t &nbsp;→&nbsp; 60 × 2 = <em>120 km</em></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">2</div>
+              <div class="step-body">
+                <h4>Sisa jarak</h4>
+                <div class="formula-inline">240 − 120 = <em>120 km</em></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">3</div>
+              <div class="step-body">
+                <h4>Waktu tempuh kedua</h4>
+                <div class="formula-inline">Waktu = Jarak ÷ v &nbsp;→&nbsp; 120 ÷ 80 = <em>1,5 jam</em></div>
+              </div>
+            </div>
+            <div class="step-item">
+              <div class="step-num">4</div>
+              <div class="step-body">
+                <h4>Total waktu (termasuk istirahat)</h4>
+                <div class="formula-inline">2 + 1 + 1,5 = <em>4,5 jam</em></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="callout callout-answer">
+            <div class="answer-text">
+              <span class="label">Jawaban</span>
+              <span class="value">4 jam 30 menit</span>
+              <span class="sub">4,5 jam termasuk istirahat</span>
+            </div>
+          </div>
+
+          <div class="route-diagram">
+            <div class="route-node start">A</div>
+            <div class="route-bar"><span class="info">120 km · 2 jam · 60 km/j</span></div>
+            <div class="route-node rest">☕</div>
+            <div class="route-bar"><span class="info">120 km · 1,5 jam · 80 km/j</span></div>
+            <div class="route-node end">B</div>
+          </div>
+        </section>
+
+        <!-- RUMUS -->
+        <section class="lesson-section" id="rumus">
+          <h2>Rumus Inti</h2>
+          <div class="formula-cards">
+            <div class="formula-card-sm">
+              <div class="desc">Jarak</div>
+              <div class="eq">J = v × t</div>
+            </div>
+            <div class="formula-card-sm">
+              <div class="desc">Kecepatan</div>
+              <div class="eq">v = J ÷ t</div>
+            </div>
+            <div class="formula-card-sm">
+              <div class="desc">Waktu</div>
+              <div class="eq">t = J ÷ v</div>
+            </div>
+          </div>
+
+          <h3>Rumus Segitiga</h3>
+          <div class="triangle-box">
+            <div class="triangle-visual">
+              <div class="tri-part tri-j" data-formula="J = v × t">J</div>
+              <div class="tri-line"></div>
+              <div class="tri-row">
+                <div class="tri-part tri-v" data-formula="v = J ÷ t">v</div>
+                <div class="tri-part tri-t" data-formula="t = J ÷ v">t</div>
+              </div>
+            </div>
+            <div class="triangle-result" id="triangleResult">
+              <span class="hint">Klik bagian segitiga untuk lihat rumus</span>
+            </div>
+          </div>
+
+          <div class="note-box">
+            <h4>Kecepatan rata-rata — jangan salah!</h4>
+            <div class="compare-row">
+              <div class="compare-item compare-wrong">
+                <span class="compare-tag">Salah</span>
+                (60 + 80) ÷ 2 = 70 km/jam
+              </div>
+              <div class="compare-item compare-right">
+                <span class="compare-tag">Benar</span>
+                240 ÷ 3,5 = 68,57 km/jam
+              </div>
+            </div>
+            <p style="font-size: 0.88rem; color: var(--text-light);">Kecepatan rata-rata = <strong>Total Jarak ÷ Total Waktu</strong>, bukan rata-rata aritmatika.</p>
+          </div>
+        </section>
+
+        <!-- POLA -->
+        <section class="lesson-section" id="pola">
+          <h2>5 Pola Soal Sering Muncul</h2>
+          <div class="tabs" id="patternTabs">
+            <button class="tab-btn active" data-tab="0">2 Kecepatan</button>
+            <button class="tab-btn" data-tab="1">Kecepatan Rata-rata</button>
+            <button class="tab-btn" data-tab="2">Pergi-Pulang</button>
+            <button class="tab-btn" data-tab="3">Menyusul/Bertemu</button>
+            <button class="tab-btn" data-tab="4">Konversi Satuan</button>
+          </div>
+          <div class="tab-panel active" data-panel="0">
+            <h3>Perjalanan 2 Kecepatan Berbeda</h3>
+            <ol>
+              <li>Jarak₁ = v₁ × t₁</li>
+              <li>Jarak₂ = Total − Jarak₁</li>
+              <li>t₂ = Jarak₂ ÷ v₂</li>
+              <li>Total = t₁ + t₂ + istirahat</li>
+            </ol>
+          </div>
+          <div class="tab-panel" data-panel="1">
+            <div class="highlight-formula">v̄ = Total Jarak ÷ Total Waktu</div>
+            <p>120 km @ 60 km/jam (2 jam) + 120 km @ 80 km/jam (1,5 jam)</p>
+            <p>= 240 ÷ 3,5 = <strong>68,57 km/jam</strong></p>
+          </div>
+          <div class="tab-panel" data-panel="2">
+            <div class="highlight-formula">Waktu = Jarak/v₁ + Jarak/v₂</div>
+            <p>Pergi 60 km/jam, pulang 40 km/jam, jarak 120 km</p>
+            <p>Waktu = 2 + 3 = 5 jam → v̄ = 240/5 = <strong>48 km/jam</strong></p>
+          </div>
+          <div class="tab-panel" data-panel="3">
+            <div class="highlight-formula">Menyusul: (v₁ − v₂) × t</div>
+            <div class="highlight-formula">Bertemu: (v₁ + v₂) × t</div>
+            <p>A (80) menyusul B (60), jarak 40 km → 40 ÷ 20 = <strong>2 jam</strong></p>
+          </div>
+          <div class="tab-panel" data-panel="4">
+            <table class="data-table">
+              <tr><td>km/jam → m/detik</td><td>÷ 3,6</td></tr>
+              <tr><td>m/detik → km/jam</td><td>× 3,6</td></tr>
+              <tr><td>jam → menit</td><td>× 60</td></tr>
+              <tr><td>menit → jam</td><td>÷ 60</td></tr>
+            </table>
+            <p>72 km/jam = 72 ÷ 3,6 = <strong>20 m/detik</strong></p>
+          </div>
+
+          <h3 style="margin-top: 32px;">Cheat Sheet</h3>
+          <div class="cheatsheet-grid">
+            <div class="cheat-row"><span>Jarak tempuh</span><code>v × t</code></div>
+            <div class="cheat-row"><span>Sisa jarak</span><code>Total − (v₁ × t₁)</code></div>
+            <div class="cheat-row"><span>Menyusul</span><code>J ÷ (v_cepat − v_lambat)</code></div>
+            <div class="cheat-row"><span>Bertemu</span><code>J ÷ (v₁ + v₂)</code></div>
+            <div class="cheat-row"><span>Kereta + tiang</span><code>Panjang ÷ v</code></div>
+            <div class="cheat-row"><span>Kereta + jembatan</span><code>(P + J) ÷ v</code></div>
+          </div>
+        </section>
+
+        <!-- STRATEGI -->
+        <section class="lesson-section" id="strategi">
+          <h2>Strategi 60 Detik</h2>
+          <div class="strategy-list">
+            <div class="strategy-row"><span class="num">01</span><span>Baca pertanyaan dulu — cari yang <strong>ditanya</strong> (waktu? jarak? kecepatan?)</span></div>
+            <div class="strategy-row"><span class="num">02</span><span>Catat data: jarak total, v₁, t₁, v₂, istirahat</span></div>
+            <div class="strategy-row"><span class="num">03</span><span>Gambar garis waktu sederhana sebelum hitung</span></div>
+            <div class="strategy-row"><span class="num">04</span><span>Hitung bertahap — jangan loncat langkah</span></div>
+            <div class="strategy-row"><span class="num">05</span><span>Cek satuan: jam atau menit? km/jam atau m/detik?</span></div>
+            <div class="strategy-row"><span class="num">06</span><span>Ada istirahat? <strong>Tambahkan</strong> ke total waktu</span></div>
+          </div>
+        </section>
+
+        <!-- LATIHAN -->
+        <section class="lesson-section" id="latihan">
+          <h2>Latihan</h2>
+          <div class="callout" style="margin-bottom:24px;border-left:3px solid var(--accent)">
+            <p style="margin-bottom:12px"><strong>50 Soal HOTS Kecepatan</strong> — latihan interaktif lengkap dengan pembahasan animasi step-by-step.</p>
+            <a href="latihan-kecepatan.html" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;font-size:0.9rem">Mulai Latihan →</a>
+          </div>
+          <p style="color: var(--text-light); font-size: 0.9rem; margin-bottom: 24px;">Kerjakan dulu, baru klik untuk lihat jawaban.</p>
+
+          <div class="quiz-block">
+            <div class="q-num">Soal 1</div>
+            <p>Budi berangkat dari P ke Q (180 km) dengan kecepatan 90 km/jam. Setelah 1 jam, ia beristirahat 30 menit, lalu melanjutkan dengan 60 km/jam. Berapa total waktu perjalanan termasuk istirahat?</p>
+            <button class="btn-reveal">Lihat Jawaban</button>
+            <div class="quiz-answer">
+              <p>Jarak₁ = 90 × 1 = 90 km</p>
+              <p>Sisa = 180 − 90 = 90 km</p>
+              <p>Waktu₂ = 90 ÷ 60 = 1,5 jam</p>
+              <p class="result">Total = 1 + 0,5 + 1,5 = 3 jam</p>
+            </div>
+          </div>
+
+          <div class="quiz-block">
+            <div class="q-num">Soal 2</div>
+            <p>Anton dan Budi berangkat bersamaan dari kota A ke B (300 km). Anton 75 km/jam, Budi 60 km/jam. Berapa jam kemudian Anton tiba di B lebih dulu?</p>
+            <button class="btn-reveal">Lihat Jawaban</button>
+            <div class="quiz-answer">
+              <p>Waktu Anton = 300 ÷ 75 = 4 jam</p>
+              <p>Waktu Budi = 300 ÷ 60 = 5 jam</p>
+              <p class="result">Selisih = 5 − 4 = 1 jam</p>
+            </div>
+          </div>
+
+          <div class="quiz-block">
+            <div class="q-num">Soal 3</div>
+            <p>Sebuah kereta 150 m melintasi tiang listrik dengan kecepatan 54 km/jam. Berapa detik waktu yang dibutuhkan?</p>
+            <button class="btn-reveal">Lihat Jawaban</button>
+            <div class="quiz-answer">
+              <p>54 km/jam = 54 ÷ 3,6 = 15 m/detik</p>
+              <p class="result">Waktu = 150 ÷ 15 = 10 detik</p>
+            </div>
+          </div>
+
+          <h3 style="margin-top: 36px;">Kesalahan Paling Sering</h3>
+          <div class="mistakes-grid" style="margin-top: 16px;">
+            <div class="mistake-row bad">Rata-rata kecepatan = (60+80)/2 = 70</div>
+            <div class="mistake-row good">v̄ = 240/3,5 = 68,57 km/jam</div>
+            <div class="mistake-row bad">Lupa tambah waktu istirahat</div>
+            <div class="mistake-row good">Total = waktu jalan + istirahat</div>
+            <div class="mistake-row bad">Satuan campur tanpa konversi</div>
+            <div class="mistake-row good">Konversi dulu sebelum hitung</div>
+          </div>
+        </section>
+      </article>
+    </div>
+
+    <footer class="site-footer">
+      <p>Hihibel · TIU · Soal Cerita</p>
+    </footer>
+  </div>
+  <script src="../js/app.js"></script>
+</body>
+</html>
