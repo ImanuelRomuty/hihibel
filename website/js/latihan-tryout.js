@@ -1,5 +1,10 @@
-// Latihan Kecepatan — Quiz Engine (Supabase + offline fallback)
+// Latihan materi SKD — Quiz Engine (TWK / TIU / TKP)
 (function () {
+  const subBab = document.body.dataset.subBab || new URLSearchParams(location.search).get('materi') || 'twk';
+  const materiInfo = (typeof MATERI_SKD !== 'undefined'
+    ? MATERI_SKD.find(p => p.id === subBab)
+    : null) || { label: subBab.toUpperCase(), fullName: subBab };
+
   let questions = [];
   let activeList = [];
   let currentIndex = 0;
@@ -27,23 +32,25 @@
     filters: document.getElementById('quizFilters'),
     modeToggle: document.getElementById('modeToggle'),
     loadingState: document.getElementById('loadingState'),
+    pageTitle: document.getElementById('latihanTitle'),
   };
 
   async function init() {
     if (window.__hihibelAuthReady) await window.__hihibelAuthReady;
 
+    if (els.pageTitle) els.pageTitle.textContent = materiInfo.label || subBab.toUpperCase();
+    document.title = `${materiInfo.fullName || materiInfo.label} — Hihibel`;
+    const heading = document.getElementById('latihanHeading');
+    if (heading && materiInfo.fullName) heading.textContent = materiInfo.fullName;
+
     if (els.loadingState) els.loadingState.style.display = 'block';
     if (els.singleView) els.singleView.style.display = 'none';
 
     try {
-      questions = await SoalService.fetchSoal('kecepatan');
+      questions = await SoalService.fetchSoal(subBab);
       activeList = [...questions];
     } catch (e) {
       console.error(e);
-      if (typeof SOAL_KECEPATAN !== 'undefined') {
-        questions = SOAL_KECEPATAN.map(q => ({ ...q, _key: String(q.id) }));
-        activeList = [...questions];
-      }
     }
 
     if (els.loadingState) els.loadingState.style.display = 'none';
@@ -51,7 +58,10 @@
 
     if (questions.length === 0) {
       if (els.singleView) {
-        els.singleView.innerHTML = '<div class="alert alert-info" style="margin:40px">Belum ada soal. Admin bisa tambah soal di panel admin.</div>';
+        els.singleView.innerHTML = `
+          <div class="alert alert-info" style="margin:40px">
+            Belum ada soal untuk paket ini. Admin bisa import dari panel admin.
+          </div>`;
       }
       return;
     }
@@ -66,10 +76,7 @@
   function qKey(q) { return q._key || String(q.id); }
 
   function buildFilters() {
-    const cats = ['Semua', ...new Set(questions.map(q => q.kategori))];
-    els.filters.innerHTML = cats.map((c, i) =>
-      `<button class="filter-btn${i === 0 ? ' active' : ''}" data-cat="${c}">${c}</button>`
-    ).join('');
+    if (els.filters) els.filters.style.display = 'none';
   }
 
   function buildGrid() {
@@ -83,16 +90,18 @@
     els.btnNext.addEventListener('click', () => navigate(1));
     els.btnCheck.addEventListener('click', checkAnswer);
 
-    els.filters.addEventListener('click', e => {
-      const btn = e.target.closest('.filter-btn');
-      if (!btn) return;
-      els.filters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const cat = btn.dataset.cat;
-      activeList = cat === 'Semua' ? [...questions] : questions.filter(q => q.kategori === cat);
-      currentIndex = 0;
-      renderQuestion();
-    });
+    if (els.filters && els.filters.children.length) {
+      els.filters.addEventListener('click', e => {
+        const btn = e.target.closest('.filter-btn');
+        if (!btn) return;
+        els.filters.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        const cat = btn.dataset.cat;
+        activeList = cat === 'Semua' ? [...questions] : questions.filter(q => q.kategori === cat);
+        currentIndex = 0;
+        renderQuestion();
+      });
+    }
 
     els.modeToggle.addEventListener('click', () => {
       gridMode = !gridMode;
@@ -140,12 +149,16 @@
     }
   }
 
+  function optionText(opt) {
+    return opt.replace(/^[A-F]\.\s*/, '');
+  }
+
   function showQuestion(q) {
     const globalIdx = questions.indexOf(q);
     const pct = ((globalIdx + 1) / questions.length) * 100;
     els.progressFill.style.width = pct + '%';
     els.progressText.innerHTML = `<span>Soal ${q.id} / ${questions.length}</span><span>${Math.round(pct)}%</span>`;
-    els.badge.textContent = q.kategori;
+    els.badge.textContent = q.kategori.replace('Tes ', '');
     els.numDisplay.textContent = `#${String(q.id).padStart(2, '0')}`;
     els.questionText.textContent = q.soal;
 
@@ -162,7 +175,7 @@
       }
       return `<button class="${cls}" data-letter="${letter}">
         <span class="option-letter">${letter}</span>
-        <span>${opt.slice(3)}</span>
+        <span>${optionText(opt)}</span>
       </button>`;
     }).join('');
 
@@ -176,7 +189,7 @@
 
     els.btnPrev.disabled = currentIndex === 0;
     els.btnNext.disabled = currentIndex === activeList.length - 1;
-    els.btnCheck.style.display = answered ? 'none' : 'none';
+    els.btnCheck.style.display = 'none';
     updateGridState();
   }
 
@@ -211,13 +224,15 @@
   function renderPembahasan(q, show) {
     if (!show) {
       els.pembahasan.style.display = 'none';
-      AnimRenderer.renderInto(els.animVisual, null);
+      if (els.animVisual) els.animVisual.innerHTML = '';
       return;
     }
     els.pembahasan.style.display = 'block';
-    AnimRenderer.renderInto(els.animVisual, q.animasi);
-    els.pembahasanSteps.innerHTML = q.langkah.map(s =>
-      `<div class="pembahasan-step"><span class="step-dot-p"></span><p>${s}</p></div>`
+    if (els.animVisual) els.animVisual.style.display = 'none';
+
+    const steps = q.langkah?.length ? q.langkah : [q.pembahasan || ''];
+    els.pembahasanSteps.innerHTML = steps.map(s =>
+      `<div class="pembahasan-step"><span class="step-dot-p"></span><div class="pembahasan-html">${s}</div></div>`
     ).join('');
   }
 

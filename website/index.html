@@ -16,7 +16,9 @@
         <a href="index.html" class="site-logo">Hihibel<span>belajar ringkas</span></a>
         <nav class="header-nav" id="headerNav">
           <a href="index.html" class="active">Beranda</a>
+          <a href="twk/latihan.html">TWK</a>
           <a href="tiu/index.html">TIU</a>
+          <a href="tkp/latihan.html">TKP</a>
         </nav>
         <button class="menu-toggle" id="menuToggle" aria-label="Menu">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
@@ -27,47 +29,70 @@
     <main>
       <section class="hero-home container reveal">
         <h1>Belajar ringkas,<br>paham cepat.</h1>
-        <p>Proyek belajar pribadi — materi TIU &amp; CPNS yang terstruktur, langsung to the point.</p>
+        <p>Platform belajar pribadi — soal SKD dikelompokkan per materi dengan pembahasan.</p>
       </section>
 
       <section class="container" style="padding-bottom: 80px;">
-        <div class="card-grid">
+        <div class="card-grid" id="materiGrid">
+          <a href="twk/latihan.html" class="menu-card reveal">
+            <span class="menu-card-label">Subtes 2</span>
+            <h2>TWK</h2>
+            <p>Tes Wawasan Kebangsaan — nasionalisme, integritas, bela negara.</p>
+            <div class="menu-card-meta">
+              <span class="badge badge-live" data-count="twk">— soal</span>
+              <span class="menu-card-arrow">Latihan →</span>
+            </div>
+          </a>
+
           <a href="tiu/index.html" class="menu-card reveal">
             <span class="menu-card-label">Subtes 1</span>
             <h2>TIU</h2>
-            <p>Tes Intelegensia Umum — verbal, numerik, dan figural. 10 sub bab materi lengkap dengan rumus dan latihan.</p>
+            <p>Tes Intelegensia Umum — soal SKD + latihan kecepatan HOTS.</p>
             <div class="menu-card-meta">
-              <span class="badge badge-live">10 Sub Bab</span>
+              <span class="badge badge-live" data-count="tiu">— soal</span>
               <span class="menu-card-arrow">Buka →</span>
             </div>
           </a>
 
-          <div class="menu-card disabled reveal">
-            <span class="menu-card-label">Subtes 2</span>
-            <h2>TWK</h2>
-            <p>Tes Wawasan Kebangsaan — nasionalisme, integritas, bela negara, dan pilar negara.</p>
-            <div class="menu-card-meta">
-              <span class="badge badge-soon">Segera</span>
-            </div>
-          </div>
-
-          <div class="menu-card disabled reveal">
+          <a href="tkp/latihan.html" class="menu-card reveal">
             <span class="menu-card-label">Subtes 3</span>
             <h2>TKP</h2>
-            <p>Tes Karakteristik Pribadi — pelayanan publik, jejaring kerja, dan profesionalisme.</p>
+            <p>Tes Karakteristik Pribadi — pelayanan publik & profesionalisme.</p>
             <div class="menu-card-meta">
-              <span class="badge badge-soon">Segera</span>
+              <span class="badge badge-live" data-count="tkp">— soal</span>
+              <span class="menu-card-arrow">Latihan →</span>
             </div>
-          </div>
+          </a>
         </div>
       </section>
     </main>
 
     <footer class="site-footer">
-      <p>Hihibel · proyek belajar pribadi</p>
-      <p style="margin-top:6px;font-size:0.75rem"><a href="admin/login.html" style="color:var(--text-light);opacity:0.6">Admin</a></p>
+      <p>Hihibel · member only</p>
     </footer>
   </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/config.js"></script>
+  <script src="js/supabase-client.js"></script>
+  <script src="js/admin-auth.js"></script>
+  <script src="js/site-auth.js"></script>
+  <script src="js/soal-service.js"></script>
   <script src="js/app.js"></script>
+  <script>
+    (async () => {
+      window.__hihibelAuthReady = SiteAuth.guard();
+      if (!(await window.__hihibelAuthReady)) return;
+      try {
+        const stats = await SoalService.fetchStats();
+        const map = Object.fromEntries(stats.map(s => [s.sub_bab, s.count]));
+        document.querySelectorAll('[data-count]').forEach(el => {
+          const n = map[el.dataset.count] || 0;
+          el.textContent = n > 0 ? `${n} soal` : 'Kosong';
+          if (n === 0) { el.classList.remove('badge-live'); el.classList.add('badge-soon'); }
+        });
+      } catch (_) {}
+    })();
+  </script>
 </body>
 </html>

@@ -104,7 +104,7 @@ const SoalService = (() => {
     return data || [];
   }
 
-  async function importSeed(seedData, subBab = 'kecepatan') {
+  async function importSeed(seedData, subBab = 'kecepatan', startUrutan = 1) {
     const db = HihibelDB.getClient();
     if (!db) throw new Error('Supabase belum dikonfigurasi');
 
@@ -116,7 +116,7 @@ const SoalService = (() => {
       jawaban: q.jawaban,
       langkah: q.langkah || [],
       animasi: q.animasi || autoAnimasi(q.kategori),
-      urutan: q.id ?? i + 1,
+      urutan: q.id ?? startUrutan + i,
     }));
 
     const { data, error } = await db.from('soal').insert(rows).select();
@@ -124,7 +124,38 @@ const SoalService = (() => {
     return data;
   }
 
+  async function fetchStats() {
+    const db = HihibelDB.getClient();
+    if (!db) return [];
+    const { data, error } = await db.from('soal').select('sub_bab');
+    if (error) throw error;
+    const counts = {};
+    (data || []).forEach((row) => {
+      counts[row.sub_bab] = (counts[row.sub_bab] || 0) + 1;
+    });
+    return Object.entries(counts).map(([sub_bab, count]) => ({ sub_bab, count }));
+  }
+
+  async function deleteBySubBab(subBab) {
+    const db = HihibelDB.getClient();
+    if (!db) throw new Error('Supabase belum dikonfigurasi');
+    const { error } = await db.from('soal').delete().eq('sub_bab', subBab);
+    if (error) throw error;
+  }
+
+  async function countBySubBab(subBab) {
+    const db = HihibelDB.getClient();
+    if (!db) return 0;
+    const { count, error } = await db
+      .from('soal')
+      .select('*', { count: 'exact', head: true })
+      .eq('sub_bab', subBab);
+    if (error) throw error;
+    return count || 0;
+  }
+
   return {
     fetchSoal, saveSoal, deleteSoal, fetchAllAdmin, importSeed, autoAnimasi,
+    fetchStats, deleteBySubBab, countBySubBab,
   };
 })();

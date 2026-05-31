@@ -36,10 +36,11 @@ CREATE TRIGGER soal_updated_at
 -- Row Level Security
 ALTER TABLE soal ENABLE ROW LEVEL SECURITY;
 
--- Publik: baca semua soal
+-- Member login: baca soal (bukan publik)
 DROP POLICY IF EXISTS "soal_public_read" ON soal;
-CREATE POLICY "soal_public_read" ON soal
-  FOR SELECT USING (true);
+DROP POLICY IF EXISTS "soal_member_read" ON soal;
+CREATE POLICY "soal_member_read" ON soal
+  FOR SELECT TO authenticated USING (true);
 
 -- Admin (user login): tulis soal
 DROP POLICY IF EXISTS "soal_admin_insert" ON soal;

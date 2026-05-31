@@ -11,36 +11,51 @@
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body>
-  <div class="admin-wrap">
-    <header class="site-header">
-      <div class="header-inner">
-        <a href="../index.html" class="site-logo">Hihibel<span>admin</span></a>
-        <nav class="header-nav">
-          <a href="dashboard.html" class="active">Soal</a>
-          <a href="buat-soal.html">+ Buat Soal</a>
-          <a href="../tiu/latihan-kecepatan.html" target="_blank">Preview Latihan</a>
-        </nav>
+  <div class="admin-shell">
+    <aside class="admin-sidebar">
+      <a href="../index.html" class="admin-sidebar-logo">Hihibel<span>admin</span></a>
+      <nav class="admin-sidebar-nav">
+        <a href="dashboard.html" class="active">Dashboard</a>
+        <a href="buat-soal.html">+ Buat Soal</a>
+        <a href="../twk/latihan.html" target="_blank">Preview TWK</a>
+        <a href="../tiu/latihan-skd.html" target="_blank">Preview TIU</a>
+        <a href="../tkp/latihan.html" target="_blank">Preview TKP</a>
+        <a href="../tiu/latihan-kecepatan.html" target="_blank">Preview Kecepatan</a>
+      </nav>
+      <div class="admin-sidebar-foot">
+        <span id="userEmail"></span>
+        <button class="btn-sm" id="btnLogout">Keluar</button>
       </div>
-    </header>
+    </aside>
 
-    <main class="admin-main wide">
-      <div class="admin-topbar">
-        <h1>Kelola Soal</h1>
-        <div class="admin-user">
-          <span id="userEmail"></span>
-          <button class="btn-sm" id="btnLogout">Keluar</button>
+    <main class="admin-content">
+      <header class="admin-page-header">
+        <div>
+          <h1>Dashboard</h1>
+          <p>Kelola bank soal — import tryout & latihan kecepatan.</p>
         </div>
-      </div>
+      </header>
 
       <div id="alertBox"></div>
 
+      <div class="admin-stats" id="statsGrid"></div>
+
       <div class="admin-card">
-        <div class="admin-topbar" style="margin-bottom:20px">
-          <p class="subtitle" style="margin:0">Sub bab: Kecepatan</p>
-          <div style="display:flex;gap:8px">
+        <div class="admin-toolbar">
+          <div class="admin-tabs" id="subBabTabs"></div>
+          <div class="admin-toolbar-actions">
+            <label class="btn-admin secondary" style="cursor:pointer">
+              Import JSON
+              <input type="file" id="fileImport" accept=".json" hidden>
+            </label>
+            <button class="btn-admin secondary" id="btnImportSeed">Seed Kecepatan</button>
             <a href="buat-soal.html" class="btn-admin primary">+ Buat Soal</a>
-            <button class="btn-admin secondary" id="btnImport">Import 50 Soal Seed</button>
           </div>
+        </div>
+
+        <div class="admin-subbar">
+          <p id="subBabDesc" class="subtitle" style="margin:0"></p>
+          <button class="btn-sm danger" id="btnClearSubBab" hidden>Hapus semua di paket ini</button>
         </div>
 
         <div id="tableWrap">
@@ -53,90 +68,10 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="../js/config.js"></script>
   <script src="../js/supabase-client.js"></script>
+  <script src="../js/paket-config.js"></script>
   <script src="../js/soal-service.js"></script>
   <script src="../js/admin-auth.js"></script>
   <script src="../js/questions-kecepatan.js"></script>
-  <script>
-    (async () => {
-      const session = await AdminAuth.requireAuth();
-      if (!session) return;
-
-      document.getElementById('userEmail').textContent = session.user.email;
-      document.getElementById('btnLogout').addEventListener('click', () => AdminAuth.logout());
-
-      const alertBox = document.getElementById('alertBox');
-      const tableWrap = document.getElementById('tableWrap');
-
-      function showAlert(msg, type = 'success') {
-        alertBox.innerHTML = `<div class="alert alert-${type}">${msg}</div>`;
-        setTimeout(() => { alertBox.innerHTML = ''; }, 4000);
-      }
-
-      async function loadTable() {
-        try {
-          const rows = await SoalService.fetchAllAdmin('kecepatan');
-          if (rows.length === 0) {
-            tableWrap.innerHTML = `
-              <div class="empty-state">
-                <p>Belum ada soal di database.</p>
-                <p style="font-size:0.85rem">Klik "Import 50 Soal Seed" untuk memindahkan soal bawaan, atau buat soal baru.</p>
-              </div>`;
-            return;
-          }
-          tableWrap.innerHTML = `
-            <table class="soal-table">
-              <thead><tr>
-                <th>#</th><th>Kategori</th><th>Soal</th><th>Jawaban</th><th>Aksi</th>
-              </tr></thead>
-              <tbody>${rows.map(r => `
-                <tr>
-                  <td>${r.urutan ?? r.id}</td>
-                  <td>${r.kategori}</td>
-                  <td class="soal-preview">${r.soal.slice(0, 80)}${r.soal.length > 80 ? '...' : ''}</td>
-                  <td><strong>${r.jawaban}</strong></td>
-                  <td class="table-actions">
-                    <a href="buat-soal.html?id=${r.id}" class="btn-sm">Edit</a>
-                    <button class="btn-sm danger" data-delete="${r.id}">Hapus</button>
-                  </td>
-                </tr>`).join('')}
-              </tbody>
-            </table>`;
-
-          tableWrap.querySelectorAll('[data-delete]').forEach(btn => {
-            btn.addEventListener('click', async () => {
-              if (!confirm('Hapus soal ini?')) return;
-              try {
-                await SoalService.deleteSoal(parseInt(btn.dataset.delete, 10));
-                showAlert('Soal dihapus.');
-                loadTable();
-              } catch (e) {
-                showAlert(e.message, 'error');
-              }
-            });
-          });
-        } catch (e) {
-          tableWrap.innerHTML = `<div class="alert alert-error">${e.message}</div>`;
-        }
-      }
-
-      document.getElementById('btnImport').addEventListener('click', async () => {
-        if (!confirm('Import 50 soal bawaan ke database? (Hanya jika tabel masih kosong)')) return;
-        try {
-          const existing = await SoalService.fetchAllAdmin('kecepatan');
-          if (existing.length > 0) {
-            showAlert('Database sudah berisi soal. Hapus dulu atau buat manual.', 'error');
-            return;
-          }
-          const result = await SoalService.importSeed(SOAL_KECEPATAN, 'kecepatan');
-          showAlert(`${result.length} soal berhasil diimport!`);
-          loadTable();
-        } catch (e) {
-          showAlert(e.message, 'error');
-        }
-      });
-
-      loadTable();
-    })();
-  </script>
+  <script src="../js/admin-dashboard.js"></script>
 </body>
 </html>

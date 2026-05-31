@@ -16,3 +16,6 @@ Thumbs.db
 # Env
 .env
 .env.local
+
+# Scraped tryout content (privat, jangan push)
+scraped/
