@@ -1,23 +1,14 @@
-// Member auth — halaman publik hanya untuk user login
+// Auth situs — browsing publik, login wajib hanya untuk latihan
 const SiteAuth = (() => {
   function loginUrl() {
     const path = location.pathname;
-    if (path.includes('/tiu/') || path.includes('/tryout/') || path.includes('/twk/') || path.includes('/tkp/')) {
-      return '../login.html';
-    }
-    if (path.includes('/admin/')) {
+    if (path.includes('/tiu/') || path.includes('/twk/') || path.includes('/tkp/') || path.includes('/admin/')) {
       return '../login.html';
     }
     return 'login.html';
   }
 
-  function homeUrl() {
-    const path = location.pathname;
-    if (path.includes('/tiu/') || path.includes('/tryout/')) return '../index.html';
-    return 'index.html';
-  }
-
-  async function waitForSession(timeoutMs = 5000) {
+  async function waitForSession(timeoutMs = 3000) {
     const db = HihibelDB.getClient();
     if (!db) return null;
 
@@ -47,44 +38,50 @@ const SiteAuth = (() => {
     });
   }
 
-  async function guard() {
+  function mountAuth(session) {
+    const slot = document.getElementById('headerAuth');
+    if (!slot) return;
+
+    const base = SiteNav?.basePath?.() || '';
+    const loginHref = `${base}login.html`;
+
+    if (session) {
+      const email = session.user?.email || 'Member';
+      slot.innerHTML = `
+        <span class="nav-user-email" title="${email}">${email.split('@')[0]}</span>
+        <button type="button" class="nav-logout-btn" id="siteLogoutBtn">Keluar</button>`;
+      document.getElementById('siteLogoutBtn')?.addEventListener('click', logout);
+    } else {
+      slot.innerHTML = `<a href="${loginHref}" class="nav-login-btn">Masuk</a>`;
+    }
+  }
+
+  /** Browsing biasa — tidak redirect */
+  async function init() {
+    if (!HihibelDB.isConfigured()) return null;
+    const session = await waitForSession();
+    mountAuth(session);
+    return session;
+  }
+
+  /** Halaman latihan — wajib login */
+  async function requireLogin() {
     if (!HihibelDB.isConfigured()) {
-      document.body.innerHTML = `
-        <div style="max-width:480px;margin:80px auto;padding:32px;font-family:sans-serif;text-align:center">
-          <h1 style="font-size:1.25rem;margin-bottom:12px">Supabase belum dikonfigurasi</h1>
-          <p style="color:#666;font-size:0.9rem">Buat <code>website/js/config.js</code> dari template config.example.js</p>
-        </div>`;
+      document.body.innerHTML = `<div class="container" style="padding:80px 28px;text-align:center">
+        <h1>Config belum siap</h1><p>Supabase belum dikonfigurasi.</p></div>`;
       return null;
     }
 
-    document.documentElement.classList.add('auth-pending');
     const session = await waitForSession();
-    document.documentElement.classList.remove('auth-pending');
+    mountAuth(session);
 
     if (!session) {
-      const next = encodeURIComponent(location.pathname + location.search + location.hash);
+      const next = encodeURIComponent(location.pathname + location.search);
       location.replace(`${loginUrl()}?next=${next}`);
       return null;
     }
 
-    mountHeader(session);
     return session;
-  }
-
-  function mountHeader(session) {
-    const nav = document.getElementById('headerNav');
-    if (!nav || nav.querySelector('.nav-user')) return;
-
-    const email = session.user?.email || 'Member';
-    const wrap = document.createElement('div');
-    wrap.className = 'nav-user';
-    wrap.innerHTML = `
-      <span class="nav-user-email" title="${email}">${email.split('@')[0]}</span>
-      <button type="button" class="nav-logout-btn" id="siteLogoutBtn">Keluar</button>
-    `;
-    nav.appendChild(wrap);
-
-    document.getElementById('siteLogoutBtn')?.addEventListener('click', logout);
   }
 
   async function login(email, password) {
@@ -98,8 +95,9 @@ const SiteAuth = (() => {
   async function logout() {
     const db = HihibelDB.getClient();
     if (db) await db.auth.signOut();
-    location.href = loginUrl();
+    const base = SiteNav?.basePath?.() || '';
+    location.href = base + 'index.html';
   }
 
-  return { guard, login, logout, waitForSession, loginUrl, homeUrl };
+  return { init, requireLogin, login, logout, waitForSession, loginUrl };
 })();

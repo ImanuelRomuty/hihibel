@@ -1,11 +1,3 @@
-// Mobile menu
-const menuToggle = document.getElementById('menuToggle');
-const headerNav = document.getElementById('headerNav');
-
-menuToggle?.addEventListener('click', () => {
-  headerNav.classList.toggle('open');
-});
-
 // Scroll reveal
 const revealEls = document.querySelectorAll('.reveal');
 const revealObs = new IntersectionObserver(

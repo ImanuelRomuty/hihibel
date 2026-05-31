@@ -3,13 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>TIU — Tes Intelegensia Umum</title>
+  <title>TWK — Tes Wawasan Kebangsaan</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/app.css">
 </head>
-<body data-section="tiu">
+<body data-section="twk">
   <div class="page-wrap">
     <header class="site-header">
       <div class="header-inner">
@@ -26,20 +26,20 @@
 
     <main class="container hub-main">
       <nav class="breadcrumb">
-        <a href="../index.html">Beranda</a><span>/</span><span class="current">TIU</span>
+        <a href="../index.html">Beranda</a><span>/</span><span class="current">TWK</span>
       </nav>
 
       <header class="page-header reveal">
-        <p class="page-eyebrow">Subtes 1</p>
-        <h1>Tes Intelegensia Umum</h1>
-        <p>Verbal, numerik, dan figural — pilih sub bab di bawah.</p>
+        <p class="page-eyebrow">Subtes 2</p>
+        <h1>Tes Wawasan Kebangsaan</h1>
+        <p>Nasionalisme, integritas, bela negara, dan pilar negara.</p>
         <div class="page-stats" id="pageStats"></div>
       </header>
 
       <div id="subbabRoot"></div>
     </main>
 
-    <footer class="site-footer"><p>Hihibel · TIU</p></footer>
+    <footer class="site-footer"><p>Hihibel · TWK</p></footer>
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
@@ -62,7 +62,7 @@
           counts = Object.fromEntries(stats.map(s => [s.sub_bab, s.count]));
         } catch (_) {}
       }
-      renderSubbabPage('tiu', counts);
+      renderSubbabPage('twk', counts);
     })();
   </script>
 </body>
