@@ -9,6 +9,24 @@
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=Source+Serif+4:opsz,wght@8..60,600&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../css/app.css">
   <link rel="stylesheet" href="../css/admin.css">
+  <style>
+    .status-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 0.78rem; padding: 4px 10px; border-radius: 50px; margin-bottom: 16px;
+    }
+    .status-pill.ok { background: var(--success-bg); color: var(--success); }
+    .status-pill.bad { background: var(--danger-bg); color: var(--danger-text); }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: currentColor; }
+    .help-box {
+      margin-top: 24px; padding: 18px 20px;
+      background: var(--bg-subtle); border-radius: var(--radius-sm);
+      border: 1px solid var(--border-light);
+    }
+    .help-box h3 { font-size: 0.88rem; margin-bottom: 10px; color: var(--heading); }
+    .help-box ol { padding-left: 18px; font-size: 0.82rem; color: var(--text-light); line-height: 1.7; }
+    .help-box li { margin-bottom: 4px; }
+    .help-box strong { color: var(--text); }
+  </style>
 </head>
 <body>
   <div class="admin-wrap">
@@ -19,25 +37,38 @@
     </header>
 
     <main class="admin-main">
-      <div class="admin-card" style="max-width:420px;margin:40px auto">
+      <div class="admin-card" style="max-width:480px;margin:40px auto">
         <h1>Login Admin</h1>
-        <p class="subtitle">Hanya admin yang bisa buat dan edit soal.</p>
+        <p class="subtitle">Login pakai email & password yang dibuat di Supabase — bukan akun GitHub.</p>
 
+        <div id="statusPill"></div>
         <div id="alertBox"></div>
 
         <form class="admin-form" id="loginForm">
           <div class="field">
-            <label for="email">Email</label>
-            <input type="email" id="email" required autocomplete="email" placeholder="admin@email.com">
+            <label for="email">Email admin (dari Supabase)</label>
+            <input type="email" id="email" required autocomplete="email" placeholder="romuty16@gmail.com">
           </div>
           <div class="field">
-            <label for="password">Password</label>
+            <label for="password">Password admin</label>
             <input type="password" id="password" required autocomplete="current-password">
           </div>
           <div class="admin-actions" style="border:none;padding-top:0;margin-top:8px">
             <button type="submit" class="btn-admin primary" style="width:100%">Masuk</button>
           </div>
         </form>
+
+        <div class="help-box">
+          <h3>Belum bisa login? Buat akun admin dulu:</h3>
+          <ol>
+            <li>Buka <strong>supabase.com</strong> → project <strong>hihibel</strong></li>
+            <li><strong>Authentication → Users</strong></li>
+            <li>Klik <strong>Add user → Create new user</strong></li>
+            <li>Isi email & password → centang <strong>Auto Confirm User</strong></li>
+            <li>Klik <strong>Create user</strong></li>
+            <li>Login di sini dengan email & password yang sama</li>
+          </ol>
+        </div>
       </div>
     </main>
   </div>
@@ -50,10 +81,17 @@
     (async () => {
       const params = new URLSearchParams(location.search);
       const alertBox = document.getElementById('alertBox');
+      const statusPill = document.getElementById('statusPill');
 
       const cfgErr = HihibelDB.configError?.();
-      if (params.get('error') === 'config' || cfgErr) {
-        alertBox.innerHTML = `<div class="alert alert-error">${cfgErr || 'Supabase belum dikonfigurasi.'}</div>`;
+      if (cfgErr) {
+        statusPill.innerHTML = '<span class="status-pill bad"><span class="status-dot"></span>Config error</span>';
+        alertBox.innerHTML = `<div class="alert alert-error">${cfgErr}</div>`;
+      } else if (HihibelDB.isConfigured()) {
+        const test = await AdminAuth.testConnection();
+        statusPill.innerHTML = test.ok
+          ? `<span class="status-pill ok"><span class="status-dot"></span>${test.msg}</span>`
+          : `<span class="status-pill bad"><span class="status-dot"></span>${test.msg}</span>`;
       }
 
       if (HihibelDB.isConfigured()) {
@@ -66,6 +104,7 @@
         const btn = e.target.querySelector('button');
         btn.disabled = true;
         btn.textContent = 'Memproses...';
+        alertBox.innerHTML = '';
         try {
           await AdminAuth.login(
             document.getElementById('email').value.trim(),
