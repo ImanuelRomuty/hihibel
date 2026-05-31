@@ -8,9 +8,9 @@ const AnimRenderer = (() => {
     'Pergi-Pulang': 'balik',
     'Kereta': 'kereta',
     'Konversi': 'konversi',
-    'Kapal & Arus': 'rata',
-    'Logika': 'rata',
-    'HOTS Kombinasi': 'balik',
+    'Kapal & Arus': 'kapal',
+    'Logika': 'logika',
+    'HOTS Kombinasi': 'kombinasi',
   };
 
   function tipeForKategori(kategori) {
@@ -20,13 +20,25 @@ const AnimRenderer = (() => {
   function defaultAnimasi(kategori) {
     const tipe = tipeForKategori(kategori);
     switch (tipe) {
-      case 'rute': return { tipe, data: [{ l: 'A', j: '', t: '', v: '' }, { l: 'B', j: '', t: '', v: '' }] };
-      case 'susul': return { tipe, data: { v1: '', v2: '', j: '' } };
-      case 'temu': return { tipe, data: { v1: '', v2: '', j: '' } };
-      case 'kereta': return { tipe, data: { p: '', v: '' } };
-      case 'balik': return { tipe, data: { pergi: '', pulang: '', hasil: '' } };
-      case 'konversi': return { tipe, data: { dari: '', ke: '' } };
-      default: return { tipe: 'rata', data: { s: '', h: '' } };
+      case 'rute':
+        return { tipe, data: [{ l: 'A', j: '', t: '', v: '' }, { l: 'B', j: '', t: '', v: '' }] };
+      case 'susul':
+      case 'temu':
+        return { tipe, data: { v1: '', v2: '', j: '' } };
+      case 'kereta':
+        return { tipe, data: { p: '', v: '', scene: 'tiang' } };
+      case 'balik':
+        return { tipe, data: { jarak: '', pergi: '', pulang: '', hasil: '' } };
+      case 'konversi':
+        return { tipe, data: { dari: '', ke: '', op: '÷ 3,6' } };
+      case 'kapal':
+        return { tipe, data: { hilir: '', hulu: '', kapal: '', arus: '' } };
+      case 'logika':
+        return { tipe, data: { mode: 'race', v1: '', v2: '', j: '', hasil: '' } };
+      case 'kombinasi':
+        return { tipe, data: { jarak: '', pergi: '', pulang: '', istirahat: '', hasil: '' } };
+      default:
+        return { tipe: 'rata', data: { segmen: [{ label: '', v: '', w: 1 }], hasil: '' } };
     }
   }
 
@@ -57,17 +69,10 @@ const AnimRenderer = (() => {
       data.forEach((seg, i) => {
         if (seg.l) chain.push({ kind: 'point', l: seg.l });
         const label = segLabel(seg);
-        if (label && i < data.length - 1) {
-          chain.push({ kind: 'seg', seg, label });
-        }
+        if (label && i < data.length - 1) chain.push({ kind: 'seg', seg, label });
       });
-      if (chain.length && chain[0].kind === 'seg') {
-        chain.unshift({ kind: 'point', l: 'A' });
-      }
-      const last = chain[chain.length - 1];
-      if (last?.kind === 'seg') {
-        chain.push({ kind: 'point', l: 'B' });
-      }
+      if (chain.length && chain[0].kind === 'seg') chain.unshift({ kind: 'point', l: 'A' });
+      if (chain[chain.length - 1]?.kind === 'seg') chain.push({ kind: 'point', l: 'B' });
     }
 
     const segItems = chain.filter(x => x.kind === 'seg');
@@ -81,7 +86,6 @@ const AnimRenderer = (() => {
 
     let segIdx = 0;
     let html = '<div class="anim-rute-v2"><div class="anim-rute-row">';
-
     chain.forEach(item => {
       if (item.kind === 'point') {
         html += `<div class="anim-rute-point">${item.l}</div>`;
@@ -95,7 +99,6 @@ const AnimRenderer = (() => {
         segIdx++;
       }
     });
-
     html += '</div></div>';
     return html;
   }
@@ -107,7 +110,7 @@ const AnimRenderer = (() => {
         <span class="anim-car slow">🚗</span>
         <span class="anim-car fast">🏎️</span>
       </div>
-      <div class="anim-info">v₁=${data.v1} km/j · v₂=${data.v2} km/j · jarak=${data.j} km</div>
+      <div class="anim-info">v₁=${data.v1} km/j · v₂=${data.v2} km/j · selisih jarak=${data.j} km</div>
     </div>`;
   }
 
@@ -125,30 +128,150 @@ const AnimRenderer = (() => {
   }
 
   function renderKereta(data) {
-    return `<div class="anim-kereta-wrap"><span class="anim-kereta">🚂</span></div>
-      <div class="anim-info">${data.p} @ ${data.v}</div>`;
+    const scene = data.scene || (parseNum(data.p) > 500 ? 'jembatan' : 'tiang');
+    const icon = scene === 'jembatan' ? '🌉' : '🗼';
+    const label = scene === 'jembatan' ? 'Jembatan + kereta' : 'Tiang listrik';
+    return `<div class="anim-kereta-scene">
+      <div class="anim-kereta-landmark">${icon}</div>
+      <div class="anim-kereta-wrap"><span class="anim-kereta">🚂</span></div>
+      <div class="anim-info">${label} · ${data.p} @ ${data.v}</div>
+    </div>`;
   }
 
   function renderBalik(data) {
-    return `<div class="anim-balik">
-      <div class="anim-balik-row"><span class="anim-balik-arrow">→</span> Pergi @ ${data.pergi} km/j</div>
-      <div class="anim-balik-row"><span class="anim-balik-arrow">←</span> Pulang @ ${data.pulang} km/j</div>
-      <div class="anim-balik-result">v̄ = <strong>${data.hasil}</strong> km/j</div>
+    const jarak = data.jarak ? `${data.jarak} km` : '';
+    return `<div class="anim-trip">
+      <div class="anim-trip-row">
+        <div class="anim-trip-node">🏠</div>
+        <div class="anim-trip-seg go">
+          <span class="anim-trip-bar"></span>
+          <span class="anim-trip-label">→ ${data.pergi} km/j${jarak ? ' · ' + jarak : ''}</span>
+        </div>
+        <div class="anim-trip-node">📍</div>
+        <div class="anim-trip-seg back">
+          <span class="anim-trip-bar"></span>
+          <span class="anim-trip-label">← ${data.pulang} km/j${jarak ? ' · ' + jarak : ''}</span>
+        </div>
+        <div class="anim-trip-node">🏠</div>
+      </div>
+      <div class="anim-trip-result">v̄ = <strong>${data.hasil}</strong> km/j</div>
     </div>`;
   }
 
   function renderKonversi(data) {
-    return `<div class="anim-konversi">
-      <span>${data.dari}</span>
-      <span class="anim-konversi-arrow">→</span>
-      <span>${data.ke}</span>
+    const op = data.op || '÷ 3,6';
+    return `<div class="anim-konversi-v2">
+      <div class="anim-unit-box from">${data.dari}</div>
+      <div class="anim-convert-op">${op}</div>
+      <div class="anim-unit-box to">${data.ke}</div>
     </div>`;
   }
 
   function renderRata(data) {
-    return `<div class="anim-rata">
-      <div class="anim-rata-formula">${data.s}</div>
-      <div class="anim-rata-result">= <strong>${data.h}</strong></div>
+    if (data.segmen && data.segmen.length) {
+      const weights = data.segmen.map(s => parseNum(s.w) || parseNum(s.label) || 1);
+      const total = weights.reduce((a, b) => a + b, 0) || 1;
+      const segs = data.segmen.map((s, i) => {
+        const pct = Math.max(15, Math.round((weights[i] / total) * 100));
+        const text = [s.label, s.v ? `@${s.v}` : ''].filter(Boolean).join(' ');
+        return `<div class="anim-rata-seg" style="flex:${pct}"><span>${text || '—'}</span></div>`;
+      }).join('');
+      return `<div class="anim-rata-v2">
+        <div class="anim-rata-bar">${segs}</div>
+        <div class="anim-rata-result">v̄ = <strong>${data.hasil}</strong> km/j</div>
+      </div>`;
+    }
+    return `<div class="anim-rata-fallback">
+      <div class="anim-rata-formula">${data.s || '—'}</div>
+      <div class="anim-rata-result">= <strong>${data.h || data.hasil || '?'}</strong></div>
+    </div>`;
+  }
+
+  function renderKapal(data) {
+    const kapal = data.kapal || '?';
+    const arus = data.arus || '?';
+    return `<div class="anim-kapal">
+      <div class="anim-kapal-row hilir">
+        <span class="anim-kapal-flow">≋≋≋→</span>
+        <span class="anim-kapal-ship">🚢</span>
+        <span class="anim-kapal-speed">${data.hilir} km/j</span>
+        <span class="anim-kapal-tag">Hilir</span>
+      </div>
+      <div class="anim-kapal-row hulu">
+        <span class="anim-kapal-flow">←≋≋≋</span>
+        <span class="anim-kapal-ship">🚢</span>
+        <span class="anim-kapal-speed">${data.hulu} km/j</span>
+        <span class="anim-kapal-tag">Hulu</span>
+      </div>
+      <div class="anim-info">v_kapal = <strong>${kapal}</strong> km/j · v_arus = ${arus} km/j</div>
+    </div>`;
+  }
+
+  function renderLogika(data) {
+    const mode = data.mode || 'formula';
+    if (mode === 'race') {
+      const w1 = parseNum(data.w1) || (data.j && data.v1 ? parseNum(data.j) / parseNum(data.v1) : 0);
+      const w2 = parseNum(data.w2) || (data.j && data.v2 ? parseNum(data.j) / parseNum(data.v2) : 0);
+      const maxW = Math.max(w1, w2, 1);
+      const p1 = Math.round((w1 / maxW) * 100);
+      const p2 = Math.round((w2 / maxW) * 100);
+      return `<div class="anim-logika-race">
+        <div class="anim-race-lane">
+          <span class="anim-race-name">A · ${data.v1} km/j</span>
+          <div class="anim-race-track"><span class="anim-race-fill" style="width:${p1}%">🏃</span></div>
+          <span class="anim-race-time">${data.w1 || w1.toFixed(1) + 'j'}</span>
+        </div>
+        <div class="anim-race-lane">
+          <span class="anim-race-name">B · ${data.v2} km/j</span>
+          <div class="anim-race-track"><span class="anim-race-fill slow" style="width:${p2}%">🏃</span></div>
+          <span class="anim-race-time">${data.w2 || w2.toFixed(1) + 'j'}</span>
+        </div>
+        <div class="anim-info">Jarak ${data.j} km · selisih = <strong>${data.hasil}</strong></div>
+      </div>`;
+    }
+    if (mode === 'compare') {
+      return `<div class="anim-logika-compare">
+        <div class="anim-compare-col">
+          <div class="anim-compare-label">Awal · ${data.v1} km/j</div>
+          <div class="anim-compare-bar" style="height:${Math.min(100, parseNum(data.v1) * 2)}px"></div>
+          <div class="anim-compare-time">${data.w1 || '?'}</div>
+        </div>
+        <div class="anim-compare-arrow">→</div>
+        <div class="anim-compare-col">
+          <div class="anim-compare-label">Baru · ${data.v2} km/j</div>
+          <div class="anim-compare-bar accent" style="height:${Math.min(100, parseNum(data.v2) * 2)}px"></div>
+          <div class="anim-compare-time">${data.w2 || '?'}</div>
+        </div>
+        <div class="anim-info">Hasil: <strong>${data.hasil}</strong></div>
+      </div>`;
+    }
+    return `<div class="anim-logika-formula">
+      <div class="anim-formula-box">${data.rumus || data.s || 'J = v × t'}</div>
+      <div class="anim-formula-arrow">↓</div>
+      <div class="anim-formula-result"><strong>${data.hasil || data.h || '?'}</strong></div>
+    </div>`;
+  }
+
+  function renderKombinasi(data) {
+    return `<div class="anim-kombinasi">
+      <div class="anim-kombinasi-row">
+        <div class="anim-rute-point">A</div>
+        <div class="anim-kombinasi-seg go">
+          <span class="anim-rute-bar"></span>
+          <span class="anim-rute-label">${data.jarak} km @ ${data.pergi} km/j</span>
+        </div>
+        <div class="anim-rute-point">B</div>
+        <div class="anim-kombinasi-seg rest">
+          <span class="anim-rute-bar"></span>
+          <span class="anim-rute-label">☕ ${data.istirahat || '—'}</span>
+        </div>
+        <div class="anim-kombinasi-seg back">
+          <span class="anim-rute-bar"></span>
+          <span class="anim-rute-label">${data.jarak} km @ ${data.pulang} km/j</span>
+        </div>
+        <div class="anim-rute-point">A</div>
+      </div>
+      <div class="anim-trip-result">Total waktu = <strong>${data.hasil}</strong></div>
     </div>`;
   }
 
@@ -162,6 +285,9 @@ const AnimRenderer = (() => {
       case 'balik': return renderBalik(anim.data);
       case 'konversi': return renderKonversi(anim.data);
       case 'rata': return renderRata(anim.data);
+      case 'kapal': return renderKapal(anim.data);
+      case 'logika': return renderLogika(anim.data);
+      case 'kombinasi': return renderKombinasi(anim.data);
       default: return '';
     }
   }

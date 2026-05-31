@@ -513,6 +513,322 @@
   color: var(--text-light);
 }
 
+/* Trip / pulang-pergi */
+.anim-trip-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow: hidden;
+}
+
+.anim-trip-node {
+  flex: 0 0 32px;
+  font-size: 1.1rem;
+  text-align: center;
+}
+
+.anim-trip-seg {
+  flex: 1;
+  min-width: 48px;
+  position: relative;
+  padding-top: 18px;
+}
+
+.anim-trip-seg.go .anim-trip-bar { background: var(--accent); }
+.anim-trip-seg.back .anim-trip-bar { background: var(--success); opacity: 0.85; }
+
+.anim-trip-bar {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  width: 100%;
+}
+
+.anim-trip-label {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.65rem;
+  color: var(--text-light);
+  white-space: nowrap;
+}
+
+.anim-trip-result {
+  text-align: center;
+  margin-top: 12px;
+  font-family: var(--mono);
+  font-size: 0.85rem;
+  color: var(--text-light);
+}
+
+.anim-trip-result strong { color: var(--accent); }
+
+/* Kecepatan rata-rata — bar segmen */
+.anim-rata-v2 { width: 100%; }
+
+.anim-rata-bar {
+  display: flex;
+  height: 36px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.anim-rata-seg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 48px;
+  background: var(--accent);
+  color: white;
+  font-size: 0.65rem;
+  font-weight: 500;
+  padding: 0 4px;
+  text-align: center;
+  border-right: 1px solid rgba(255,255,255,0.3);
+}
+
+.anim-rata-seg:nth-child(even) { background: #3d5a80; }
+.anim-rata-seg span { line-height: 1.2; }
+
+.anim-rata-fallback {
+  text-align: center;
+}
+
+.anim-rata-formula {
+  font-family: var(--mono);
+  font-size: 0.88rem;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+/* Konversi v2 */
+.anim-konversi-v2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.anim-unit-box {
+  padding: 10px 16px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 0.9rem;
+  background: var(--bg-white);
+}
+
+.anim-unit-box.to {
+  border-color: var(--accent);
+  color: var(--accent);
+  font-weight: 600;
+}
+
+.anim-convert-op {
+  font-family: var(--mono);
+  font-size: 0.82rem;
+  color: var(--text-light);
+  padding: 4px 8px;
+  background: var(--bg-subtle);
+  border-radius: 50px;
+}
+
+/* Kereta scene */
+.anim-kereta-scene {
+  position: relative;
+}
+
+.anim-kereta-landmark {
+  text-align: center;
+  font-size: 1.2rem;
+  margin-bottom: 4px;
+}
+
+/* Kapal & arus */
+.anim-kapal-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  margin-bottom: 6px;
+  border-radius: var(--radius-sm);
+  background: var(--bg-white);
+  border: 1px solid var(--border-light);
+}
+
+.anim-kapal-row.hilir { border-left: 3px solid var(--accent); }
+.anim-kapal-row.hulu { border-left: 3px solid var(--success); }
+
+.anim-kapal-flow {
+  font-size: 0.75rem;
+  color: var(--accent);
+  opacity: 0.7;
+  letter-spacing: -2px;
+  min-width: 36px;
+}
+
+.anim-kapal-row.hulu .anim-kapal-flow { color: var(--success); }
+
+.anim-kapal-ship { font-size: 1.1rem; }
+
+.anim-kapal-speed {
+  flex: 1;
+  font-family: var(--mono);
+  font-size: 0.82rem;
+}
+
+.anim-kapal-tag {
+  font-size: 0.68rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  color: var(--text-light);
+  letter-spacing: 0.04em;
+}
+
+/* Logika */
+.anim-logika-race { width: 100%; }
+
+.anim-race-lane {
+  display: grid;
+  grid-template-columns: 80px 1fr 48px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+
+.anim-race-name {
+  font-size: 0.72rem;
+  color: var(--text-light);
+}
+
+.anim-race-track {
+  height: 24px;
+  background: var(--border-light);
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+}
+
+.anim-race-fill {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  height: 100%;
+  background: var(--accent);
+  border-radius: 12px;
+  padding-right: 6px;
+  font-size: 0.85rem;
+  min-width: 28px;
+  transition: width 0.6s ease;
+}
+
+.anim-race-fill.slow { background: #3d5a80; }
+
+.anim-race-time {
+  font-family: var(--mono);
+  font-size: 0.72rem;
+  color: var(--text-light);
+  text-align: right;
+}
+
+.anim-logika-compare {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 16px;
+  padding: 8px 0;
+}
+
+.anim-compare-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.anim-compare-label {
+  font-size: 0.72rem;
+  color: var(--text-light);
+}
+
+.anim-compare-bar {
+  width: 48px;
+  min-height: 20px;
+  background: var(--border);
+  border-radius: 4px 4px 0 0;
+}
+
+.anim-compare-bar.accent { background: var(--accent); }
+
+.anim-compare-time {
+  font-family: var(--mono);
+  font-size: 0.78rem;
+}
+
+.anim-compare-arrow {
+  color: var(--accent);
+  font-size: 1.2rem;
+  padding-bottom: 24px;
+}
+
+.anim-logika-formula {
+  text-align: center;
+  padding: 8px 0;
+}
+
+.anim-formula-box {
+  display: inline-block;
+  padding: 12px 20px;
+  border: 1.5px solid var(--accent);
+  border-radius: var(--radius-sm);
+  font-family: var(--mono);
+  font-size: 0.95rem;
+  color: var(--heading);
+}
+
+.anim-formula-arrow {
+  color: var(--text-light);
+  margin: 8px 0;
+  font-size: 1.1rem;
+}
+
+.anim-formula-result {
+  font-family: var(--mono);
+  font-size: 1rem;
+  color: var(--accent);
+}
+
+/* HOTS kombinasi */
+.anim-kombinasi-row {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-bottom: 4px;
+}
+
+.anim-kombinasi-seg {
+  flex: 1;
+  min-width: 56px;
+  position: relative;
+  padding-top: 18px;
+}
+
+.anim-kombinasi-seg.rest {
+  flex: 0 0 56px;
+}
+
+.anim-kombinasi-seg.rest .anim-rute-bar {
+  background: var(--border);
+  background-image: repeating-linear-gradient(90deg, var(--border) 0, var(--border) 4px, transparent 4px, transparent 8px);
+}
+
+.anim-kombinasi-seg.back .anim-rute-bar { background: var(--success); opacity: 0.85; }
+
 /* Legacy — keep for compatibility */
 .anim-rute {
   display: flex;

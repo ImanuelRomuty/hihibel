@@ -3,13 +3,13 @@ const SoalService = (() => {
   const KATEGORI_ANIMASI = {
     'Menyusul': { tipe: 'susul', data: { v1: '?', v2: '?', j: '?' } },
     'Bertemu': { tipe: 'temu', data: { v1: '?', v2: '?', j: '?' } },
-    'Kereta': { tipe: 'kereta', data: { p: '?', v: '?' } },
-    'Pergi-Pulang': { tipe: 'balik', data: { pergi: '?', pulang: '?', hasil: '?' } },
-    'Konversi': { tipe: 'konversi', data: { dari: '?', ke: '?' } },
-    'Kecepatan Rata-rata': { tipe: 'rata', data: { s: '...', h: '?' } },
-    'Kapal & Arus': { tipe: 'rata', data: { s: 'hilir / hulu', h: '?' } },
-    'Logika': { tipe: 'rata', data: { s: '...', h: '?' } },
-    'HOTS Kombinasi': { tipe: 'balik', data: { pergi: '?', pulang: '?', hasil: '?' } },
+    'Kereta': { tipe: 'kereta', data: { p: '?', v: '?', scene: 'tiang' } },
+    'Pergi-Pulang': { tipe: 'balik', data: { jarak: '?', pergi: '?', pulang: '?', hasil: '?' } },
+    'Konversi': { tipe: 'konversi', data: { dari: '?', ke: '?', op: '÷ 3,6' } },
+    'Kecepatan Rata-rata': { tipe: 'rata', data: { segmen: [{ label: '?', v: '?', w: 1 }], hasil: '?' } },
+    'Kapal & Arus': { tipe: 'kapal', data: { hilir: '?', hulu: '?', kapal: '?', arus: '?' } },
+    'Logika': { tipe: 'logika', data: { mode: 'formula', rumus: '?', hasil: '?' } },
+    'HOTS Kombinasi': { tipe: 'kombinasi', data: { jarak: '?', pergi: '?', pulang: '?', istirahat: '?', hasil: '?' } },
     'Dua Kecepatan': { tipe: 'rute', data: [{ l: 'A', j: '...' }, { l: 'B', j: '...' }] },
   };
 
